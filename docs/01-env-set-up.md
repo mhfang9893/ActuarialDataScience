@@ -28,6 +28,36 @@
 
 ## 建立环境
 
+此门课程用到了R和python，大家对于R应该很熟悉，python也应该在机器学习的课程中有所接触。此外，这门课程还用到了`interface to tensorflow`，即在R中调用python中的`tensorflow`。
+
 ### R
 
+`reticulate`是interface to python。
+
+1. 安装
+
+2. 可以让R自动安装
+
+3. 指定tensorflow的目录
+
+
+
+
 ### Python
+
+1. 安装Anaconda。
+
+2. 建立独立环境`conda create env -n "env-name" python=3.8 tensorflow notebook`。
+
+3. 激活环境`conda activate "env-name"`.
+
+4. cd 到你的工作目录。
+
+5. 启动jupyter notebook `jupyter notebook`。
+
+6. 如遇到缺少的包，在该环境下conda安装。
+
+
+
+
+

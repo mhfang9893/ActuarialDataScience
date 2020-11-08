@@ -123,11 +123,26 @@
 </div>
 <div id="建立环境" class="section level2">
 <h2><span class="header-section-number">1.2</span> 建立环境</h2>
+<p>此门课程用到了R和python，大家对于R应该很熟悉，python也应该在机器学习的课程中有所接触。此外，这门课程还用到了<code>interface to tensorflow</code>，即在R中调用python中的<code>tensorflow</code>。</p>
 <div id="r" class="section level3">
 <h3><span class="header-section-number">1.2.1</span> R</h3>
+<p><code>reticulate</code>是interface to python。</p>
+<ol style="list-style-type: decimal">
+<li><p>安装</p></li>
+<li><p>可以让R自动安装</p></li>
+<li><p>指定tensorflow的目录</p></li>
+</ol>
 </div>
 <div id="python" class="section level3">
 <h3><span class="header-section-number">1.2.2</span> Python</h3>
+<ol style="list-style-type: decimal">
+<li><p>安装Anaconda。</p></li>
+<li><p>建立独立环境<code>conda create env -n "env-name" python=3.8 tensorflow notebook</code>。</p></li>
+<li><p>激活环境<code>conda activate "env-name"</code>.</p></li>
+<li><p>cd 到你的工作目录。</p></li>
+<li><p>启动jupyter notebook <code>jupyter notebook</code>。</p></li>
+<li><p>如遇到缺少的包，在该环境下conda安装。</p></li>
+</ol>
 
 </div>
 </div>
