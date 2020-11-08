@@ -1,0 +1,8 @@
+new_session: true
+book_filename: "MAM"
+language:
+  ui:
+    chapter_name: "Chapter "
+delete_merged_file: true
+output_dir: "docs"
+rmd_files: ["index.Rmd","01-env-set-up.Rmd"]

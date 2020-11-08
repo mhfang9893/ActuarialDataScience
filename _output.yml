@@ -1,0 +1,20 @@
+bookdown::gitbook:
+  split_by: chapter
+  css: style.css
+  config:
+    toc:
+      before: |
+        <li><a href="./">现代精算统计模型</a></li>
+      after: |
+        <li><a href="https://github.com/sxpyggy/Modern-Actuarial-Models/tree/modern-actuarial-models" target="blank">GitHub repo</a></li>
+# download: ["pdf", "epub"]
+# bookdown::pdf_book:
+#  includes:
+#    in_header: _preamble.tex
+#  latex_engine: xelatex
+#  citation_package: natbib
+#  keep_tex: yes
+#  extra_dependencies: ["flafter"]
+
+# bookdown::epub_book: default
+
