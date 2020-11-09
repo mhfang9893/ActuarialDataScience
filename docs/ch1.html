@@ -78,8 +78,9 @@
 <li class="chapter" data-level="1" data-path="ch1.html"><a href="ch1.html"><i class="fa fa-check"></i><b>1</b> 准备工作</a><ul>
 <li class="chapter" data-level="1.1" data-path="ch1.html"><a href="ch1.html#克隆代码"><i class="fa fa-check"></i><b>1.1</b> 克隆代码</a></li>
 <li class="chapter" data-level="1.2" data-path="ch1.html"><a href="ch1.html#建立环境"><i class="fa fa-check"></i><b>1.2</b> 建立环境</a><ul>
-<li class="chapter" data-level="1.2.1" data-path="ch1.html"><a href="ch1.html#r"><i class="fa fa-check"></i><b>1.2.1</b> R</a></li>
-<li class="chapter" data-level="1.2.2" data-path="ch1.html"><a href="ch1.html#python"><i class="fa fa-check"></i><b>1.2.2</b> Python</a></li>
+<li class="chapter" data-level="1.2.1" data-path="ch1.html"><a href="ch1.html#r-interface-to-python"><i class="fa fa-check"></i><b>1.2.1</b> R interface to python</a></li>
+<li class="chapter" data-level="1.2.2" data-path="ch1.html"><a href="ch1.html#r"><i class="fa fa-check"></i><b>1.2.2</b> R</a></li>
+<li class="chapter" data-level="1.2.3" data-path="ch1.html"><a href="ch1.html#python"><i class="fa fa-check"></i><b>1.2.3</b> Python</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -112,7 +113,7 @@
 <li><p><code>Fork</code><a href="https://github.com/JSchelldorfer/ActuarialDataScience">此链接</a>到自己账户下的新仓库,可重新命名为如<code>Modern-Actuarial-Models</code>。</p></li>
 <li><p>安装<a href="https://git-scm.com/">git</a>。在命令窗口使用<code>$ git config --global user.name "Your Name"</code> 和 <code>$ git config --global user.email "youremail@yourdomain.com"</code> 配置git的用户名和邮箱分别为GitHub账户的用户名和邮箱。最后可使用<code>$ git config --list</code>查看配置信息。</p></li>
 <li><p>在本地电脑创建ssh public key，并拷贝到GitHub中个人设置中，ssh public key一般保存在本人目录下的隐藏文件夹ssh中。详见<a href="https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/connecting-to-github-with-ssh">链接</a>。</p></li>
-<li><p>电脑连接手机4G热点。这步主要是为了加速下部克隆的速度。</p></li>
+<li><p>电脑连接手机4G热点。这步主要是为了加速下步克隆的速度。</p></li>
 <li><p>在RStudio中创建新的项目，选择Version Control，然后Git，在Repository URL中输入GitHub中刚才建立的新仓库地址（在<code>Code</code>下能找到克隆地址，建议使用SSH地址，可以避免后续<code>push</code>代码到云端时，每次都需要输入密码的麻烦），输入文件夹名称，选择存放位置，点击<code>create project</code>，R开始下载GitHub上该仓库的所有内容。</p></li>
 <li><p>此时，你在GitHub上仓库的内容全部克隆到了本地，且放在了一个R Project中。在该Project中，会多两个文件，.Rproj和.gitignore，第一个文件保存了Project的设置，第二文件告诉git在<code>push</code>本地文件到GitHub时哪些文件被忽略。</p></li>
 <li><p>如果你修改了本地文件，可以通过R中内嵌的Git上传到GitHub（先<code>commit</code>再<code>push</code>），这样方便在不同电脑上同步文件。git是代码版本控制工具，在<code>push</code>之前，你可以比较和上个代码版本的差异。GitHub记录了你每次<code>push</code>的详细信息，且存放在本地文件夹.git中。</p></li>
@@ -123,25 +124,34 @@
 </div>
 <div id="建立环境" class="section level2">
 <h2><span class="header-section-number">1.2</span> 建立环境</h2>
-<p>此门课程用到了R和python，大家对于R应该很熟悉，python也应该在机器学习的课程中有所接触。此外，这门课程还用到了<code>interface to tensorflow</code>，即在R中调用python中的<code>tensorflow</code>。</p>
+<p>首先下载并安装<a href="https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/">Anaconda</a>或者<a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda</a>，并通过修改用户目录下的<code>.condarc</code>文件使用<a href="https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/">TUNA镜像源</a>. 这步很关键，否则下面的安装会很慢。</p>
+<div id="r-interface-to-python" class="section level3">
+<h3><span class="header-section-number">1.2.1</span> R interface to python</h3>
+<p>安装R包<code>reticulate</code>，它可以建立R与python的交互。常见的命令如下：</p>
+<ul>
+<li><p><code>conda_list()</code>列出已安装的conda环境</p></li>
+<li><p><code>virtualenv_list()</code>列出已存在的虚拟环境</p></li>
+<li><p><code>use_python, use_conda, use_virtualenv</code>可以指定与R关联的python。</p></li>
+<li><p><code>py_config()</code>可以查看当前python关联信息。</p></li>
+</ul>
+<p>很多时候，R会创建一个独立conda环境<code>r-miniconda/envs/r-reticulate</code>。</p>
+</div>
 <div id="r" class="section level3">
-<h3><span class="header-section-number">1.2.1</span> R</h3>
-<p><code>reticulate</code>是interface to python。</p>
+<h3><span class="header-section-number">1.2.2</span> R</h3>
+<p>这里主要说明<code>keras</code>包的安装和使用。<a href="https://keras.rstudio.com/">Keras</a>是tensorflow的API，在keras中建立的神经网络模型都由tensorflow训练。安装<code>keras</code>包主要是安装python库tensorflow，并让R与之相关联。</p>
 <ol style="list-style-type: decimal">
-<li><p>安装</p></li>
-<li><p>可以让R自动安装</p></li>
-<li><p>指定tensorflow的目录</p></li>
+<li><p><code>install.packages("tensorflow")</code>。</p></li>
+<li><p>如果未装tensorflow库则运行<code>install_tensorflow()</code>，该命令会自动选择合适的方法安装tensorflow；如果本地已经安装tensorflow库，可以使用命令<code>reticulate:use_conda("your_tensorflow_env")</code>关联<code>your_tensorflow_env</code>。</p></li>
 </ol>
 </div>
 <div id="python" class="section level3">
-<h3><span class="header-section-number">1.2.2</span> Python</h3>
+<h3><span class="header-section-number">1.2.3</span> Python</h3>
 <ol style="list-style-type: decimal">
-<li><p>安装Anaconda。</p></li>
 <li><p>建立独立环境<code>conda create env -n "env-name" python=3.8 tensorflow notebook</code>。</p></li>
 <li><p>激活环境<code>conda activate "env-name"</code>.</p></li>
 <li><p>cd 到你的工作目录。</p></li>
 <li><p>启动jupyter notebook <code>jupyter notebook</code>。</p></li>
-<li><p>如遇到缺少的包，在该环境下conda安装。</p></li>
+<li><p>如遇到缺少的包，在该环境<code>env-name</code>下使用conda安装缺少的包。</p></li>
 </ol>
 
 </div>

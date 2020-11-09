@@ -12,7 +12,7 @@
 
 4. 在本地电脑创建ssh public key，并拷贝到GitHub中个人设置中，ssh public key一般保存在本人目录下的隐藏文件夹ssh中。详见[链接](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/connecting-to-github-with-ssh)。
 
-5. 电脑连接手机4G热点。这步主要是为了加速下部克隆的速度。
+5. 电脑连接手机4G热点。这步主要是为了加速下步克隆的速度。
 
 6. 在RStudio中创建新的项目，选择Version Control，然后Git，在Repository URL中输入GitHub中刚才建立的新仓库地址（在`Code`下能找到克隆地址，建议使用SSH地址，可以避免后续`push`代码到云端时，每次都需要输入密码的麻烦），输入文件夹名称，选择存放位置，点击`create project`，R开始下载GitHub上该仓库的所有内容。 
 
@@ -28,34 +28,42 @@
 
 ## 建立环境
 
-此门课程用到了R和python，大家对于R应该很熟悉，python也应该在机器学习的课程中有所接触。此外，这门课程还用到了`interface to tensorflow`，即在R中调用python中的`tensorflow`。
+首先下载并安装[Anaconda](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/)或者[Miniconda](https://docs.conda.io/en/latest/miniconda.html)，并通过修改用户目录下的`.condarc`文件使用[TUNA镜像源](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/). 这步很关键，否则下面的安装会很慢。
+
+### R interface to python
+
+安装R包`reticulate`，它可以建立R与python的交互。常见的命令如下：
+
+- `conda_list()`列出已安装的conda环境
+
+- `virtualenv_list()`列出已存在的虚拟环境
+
+- `use_python, use_conda, use_virtualenv`可以指定与R关联的python。
+
+- `py_config()`可以查看当前python关联信息。
+
+很多时候，R会创建一个独立conda环境`r-miniconda/envs/r-reticulate`。
 
 ### R
 
-`reticulate`是interface to python。
+这里主要说明`keras`包的安装和使用。[Keras](https://keras.rstudio.com/)是tensorflow的API，在keras中建立的神经网络模型都由tensorflow训练。安装`keras`包主要是安装python库tensorflow，并让R与之相关联。
 
-1. 安装
+1. `install.packages("tensorflow")`。
 
-2. 可以让R自动安装
-
-3. 指定tensorflow的目录
-
-
-
+2. 如果未装tensorflow库则运行`install_tensorflow()`，该命令会自动选择合适的方法安装tensorflow；如果本地已经安装tensorflow库，可以使用命令`reticulate:use_conda("your_tensorflow_env")`关联`your_tensorflow_env`。
 
 ### Python
 
-1. 安装Anaconda。
+1. 建立独立环境`conda create env -n "env-name" python=3.8 tensorflow notebook`。
 
-2. 建立独立环境`conda create env -n "env-name" python=3.8 tensorflow notebook`。
+2. 激活环境`conda activate "env-name"`.
 
-3. 激活环境`conda activate "env-name"`.
+3. cd 到你的工作目录。
 
-4. cd 到你的工作目录。
+4. 启动jupyter notebook `jupyter notebook`。
 
-5. 启动jupyter notebook `jupyter notebook`。
+5. 如遇到缺少的包，在该环境`env-name`下使用conda安装缺少的包。
 
-6. 如遇到缺少的包，在该环境下conda安装。
 
 
 
