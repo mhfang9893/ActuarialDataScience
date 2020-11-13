@@ -10,7 +10,7 @@
 
 3. 安装[git](https://git-scm.com/)。在命令窗口使用`$ git config --global user.name "Your Name"` 和 `$ git config --global user.email "youremail@yourdomain.com"` 配置git的用户名和邮箱分别为GitHub账户的用户名和邮箱。最后可使用`$ git config --list`查看配置信息。
 
-4. 在本地电脑创建ssh public key，并拷贝到GitHub中个人设置中，ssh public key一般保存在本人目录下的隐藏文件夹ssh中。详见[链接](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/connecting-to-github-with-ssh)。
+4. (选做)在本地电脑创建ssh public key，并拷贝到GitHub中个人设置中，ssh public key一般保存在本人目录下的隐藏文件夹ssh中。详见[链接](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/connecting-to-github-with-ssh)。
 
 5. 电脑连接手机4G热点。这步主要是为了加速下步克隆的速度。
 
@@ -52,7 +52,7 @@
 
 2. 如果未装tensorflow库则运行`install_tensorflow()`，该命令会自动选择合适的方法安装tensorflow；如果本地已经安装tensorflow库，可以使用命令`reticulate:use_conda("your_tensorflow_env")`关联`your_tensorflow_env`。
 
-### Python
+### Python和
 
 1. 建立独立环境`conda create env -n "env-name" python=3.8 tensorflow notebook`。
 

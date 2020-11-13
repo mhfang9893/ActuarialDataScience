@@ -80,7 +80,7 @@
 <li class="chapter" data-level="1.2" data-path="ch1.html"><a href="ch1.html#建立环境"><i class="fa fa-check"></i><b>1.2</b> 建立环境</a><ul>
 <li class="chapter" data-level="1.2.1" data-path="ch1.html"><a href="ch1.html#r-interface-to-python"><i class="fa fa-check"></i><b>1.2.1</b> R interface to python</a></li>
 <li class="chapter" data-level="1.2.2" data-path="ch1.html"><a href="ch1.html#r"><i class="fa fa-check"></i><b>1.2.2</b> R</a></li>
-<li class="chapter" data-level="1.2.3" data-path="ch1.html"><a href="ch1.html#python"><i class="fa fa-check"></i><b>1.2.3</b> Python</a></li>
+<li class="chapter" data-level="1.2.3" data-path="ch1.html"><a href="ch1.html#python和"><i class="fa fa-check"></i><b>1.2.3</b> Python和</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -112,7 +112,7 @@
 <li><p>注册GitHub账户。</p></li>
 <li><p><code>Fork</code><a href="https://github.com/JSchelldorfer/ActuarialDataScience">此链接</a>到自己账户下的新仓库,可重新命名为如<code>Modern-Actuarial-Models</code>。</p></li>
 <li><p>安装<a href="https://git-scm.com/">git</a>。在命令窗口使用<code>$ git config --global user.name "Your Name"</code> 和 <code>$ git config --global user.email "youremail@yourdomain.com"</code> 配置git的用户名和邮箱分别为GitHub账户的用户名和邮箱。最后可使用<code>$ git config --list</code>查看配置信息。</p></li>
-<li><p>在本地电脑创建ssh public key，并拷贝到GitHub中个人设置中，ssh public key一般保存在本人目录下的隐藏文件夹ssh中。详见<a href="https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/connecting-to-github-with-ssh">链接</a>。</p></li>
+<li><p>(选做)在本地电脑创建ssh public key，并拷贝到GitHub中个人设置中，ssh public key一般保存在本人目录下的隐藏文件夹ssh中。详见<a href="https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/connecting-to-github-with-ssh">链接</a>。</p></li>
 <li><p>电脑连接手机4G热点。这步主要是为了加速下步克隆的速度。</p></li>
 <li><p>在RStudio中创建新的项目，选择Version Control，然后Git，在Repository URL中输入GitHub中刚才建立的新仓库地址（在<code>Code</code>下能找到克隆地址，建议使用SSH地址，可以避免后续<code>push</code>代码到云端时，每次都需要输入密码的麻烦），输入文件夹名称，选择存放位置，点击<code>create project</code>，R开始下载GitHub上该仓库的所有内容。</p></li>
 <li><p>此时，你在GitHub上仓库的内容全部克隆到了本地，且放在了一个R Project中。在该Project中，会多两个文件，.Rproj和.gitignore，第一个文件保存了Project的设置，第二文件告诉git在<code>push</code>本地文件到GitHub时哪些文件被忽略。</p></li>
@@ -144,8 +144,8 @@
 <li><p>如果未装tensorflow库则运行<code>install_tensorflow()</code>，该命令会自动选择合适的方法安装tensorflow；如果本地已经安装tensorflow库，可以使用命令<code>reticulate:use_conda("your_tensorflow_env")</code>关联<code>your_tensorflow_env</code>。</p></li>
 </ol>
 </div>
-<div id="python" class="section level3">
-<h3><span class="header-section-number">1.2.3</span> Python</h3>
+<div id="python和" class="section level3">
+<h3><span class="header-section-number">1.2.3</span> Python和</h3>
 <ol style="list-style-type: decimal">
 <li><p>建立独立环境<code>conda create env -n "env-name" python=3.8 tensorflow notebook</code>。</p></li>
 <li><p>激活环境<code>conda activate "env-name"</code>.</p></li>
