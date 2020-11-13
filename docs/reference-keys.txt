@@ -1,6 +1,8 @@
 ch1
 克隆代码
 建立环境
-r-interface-to-python
-r
-python和
+r-interface-to-keras
+r自带安装方式
+使用reticulate关联conda环境
+r-interface-to-python-了解
+python-了解
