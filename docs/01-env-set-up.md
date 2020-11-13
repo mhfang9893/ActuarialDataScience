@@ -72,7 +72,7 @@
     C:\Users\Guangyuan\AppData\Local\r-miniconda\envs\r-reticulate\python.exe
     You can install TensorFlow using the install_tensorflow() function.
   
-  抱歉！我暂且没找到解决办法。。。但我们可以在conda下安装好tensorflow然后关联到R。这时，你先把之前失败的安装`C:\Users\Guangyuan\AppData\Local\r-miniconda`，这个文件夹完全删掉。然后参考以下安装步骤。
+  抱歉！我暂时没找到解决办法。。。但我们可以在conda下安装好tensorflow然后关联到R。这时，你先把之前失败的安装`C:\Users\Guangyuan\AppData\Local\r-miniconda`，这个文件夹完全删掉。然后参考以下安装步骤。
   
   
 #### 使用reticulate关联conda环境

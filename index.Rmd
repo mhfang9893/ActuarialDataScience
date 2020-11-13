@@ -79,6 +79,10 @@ editor_options:
 
 **我定期把同学们的普遍疑问在这里解答，欢迎提问！**
 
+**👉  CASdatasets** (2020/11/13)
+
+源文件在<http://cas.uqam.ca/>，但下载速度很慢，我把它放在[坚果云共享](https://www.jianguoyun.com/p/DZGAYXEQ3cTHBhjtn80D)。下载后选择install from local archive file。
+
 **👉  微信群** (2020/11/08)
 
 ```{r,echo=FALSE,out.width="30%",fig.align = 'center'}

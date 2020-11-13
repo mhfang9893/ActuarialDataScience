@@ -1,7 +1,7 @@
 --- 
 title: "现代精算统计模型"
 author: "Modern Actuarial Models"
-date: "2020-11-13 16:43:30"
+date: "2020-11-13 22:56:59"
 site: bookdown::bookdown_site
 output: bookdown::gitbook
 documentclass: book
@@ -78,6 +78,10 @@ editor_options:
 ## 🤔 答疑{-}
 
 **我定期把同学们的普遍疑问在这里解答，欢迎提问！**
+
+**👉  CASdatasets** (2020/11/13)
+
+源文件在<http://cas.uqam.ca/>，但下载速度很慢，我把它放在[坚果云共享](https://www.jianguoyun.com/p/DZGAYXEQ3cTHBhjtn80D)。下载后选择install from local archive file。
 
 **👉  微信群** (2020/11/08)
 
