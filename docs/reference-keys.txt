@@ -1,8 +1,13 @@
-ch1
 克隆代码
 建立环境
 r-interface-to-keras
-r自带安装方式
+r自动安装
 使用reticulate关联conda环境
-r-interface-to-python-了解
-python-了解
+指定conda安装
+使用reticulate安装
+r-interface-to-python
+reticulate-常见命令
+切换r关联的conda环境
+python
+conda环境
+tensorflowpytorch-gpu-version

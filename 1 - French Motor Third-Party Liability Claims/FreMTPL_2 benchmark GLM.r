@@ -9,7 +9,7 @@
 #########  load packages and data
 ##########################################
  
-source("./Tools/FreMTPL_1b load data.R")
+source("./1 - French Motor Third-Party Liability Claims/Tools/FreMTPL_1b load data.R")
 
 # learning data
 (l2 <- ddply(learn.GLM, .(ClaimNb), summarise, n=sum(n), exp=sum(Exposure)))
