@@ -24,64 +24,73 @@ editor_options:
 
 以下安排为初步计划，根据大家的需求和背景，我们可能要花更多的时间在某些重要的方法及其在精算上的应用。
 
-- 第9-10周: 
+- 第9周：
+
+  准备工作。
+
+- 第10周: 
   
-  - 1 - French Motor Third-Party Liability Claims 
+  1 - French Motor Third-Party Liability Claims 
     
-    <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3164764>
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3164764>
 
 - 第11周: 
-  - 2 - Inisghts from Inside Neural Networks
-    
-    <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3226852>
 
-  - 3 - Nesting Classical Actuarial Models into Neural Networks
+  2 - Inisghts from Inside Neural Networks
+    
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3226852>
+
+  3 - Nesting Classical Actuarial Models into Neural Networks
   
-    <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3320525>
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3320525>
 
 - 第12周：
 
-  - 4 - On Boosting: Theory and Applications
+  4 - On Boosting: Theory and Applications
     
     <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3402687>
   
 - 第13周：
 
-  - 5 - Unsupervised Learning: What is a Sports Car
+  5 - Unsupervised Learning: What is a Sports Car
   
-    <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3439358>
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3439358>
   
 - 第14周：
 
-  - 6 - Lee and Carter go Machine Learning: Recurrent Neural Networks
+  6 - Lee and Carter go Machine Learning: Recurrent Neural Networks
   
-    <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3441030>
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3441030>
 
 - 第15-16周：
 
-  - 7 - The Art of Natural Language Processing: Classical, Modern and Contemporary Approaches to Text Document Classification
+  7 - The Art of Natural Language Processing: Classical, Modern and Contemporary Approaches to Text Document Classification
   
-    <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3547887>
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3547887>
 
 - 第17周：
 
-  - 8 - Peeking into the Black Box: An Actuarial Case Study for Interpretable Machine Learning 
+  8 - Peeking into the Black Box: An Actuarial Case Study for Interpretable Machine Learning 
   
-    <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3595944>
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3595944>
 
 - 第18周：
 
-  - 9 - Convolutional neural network case studies: (1) Anomalies in Mortality Rates (2) Image Recognition 
+  9 - Convolutional neural network case studies: (1) Anomalies in Mortality Rates (2) Image Recognition 
   
-    <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3656210>
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3656210>
 
 ## 🤔 答疑{-}
 
 **我定期把同学们的普遍疑问在这里解答，欢迎提问！**
 
+**👉 MAC OS, Linux, WIN** (2020/11/16)
+
+据观察，在MAC OS和Linux系统下安装`keras`成功的比例较高。WIN系统下，Python各个包的依赖以及和R包的匹配有一定的问题，一般可以通过更换镜像源解决。也可以按[此环境](https://www.jianguoyun.com/p/DVX62MgQ3cTHBhiq2M0D)配置，使用命令`conda create --name <env> --file <this file>`。
+
 **👉  CASdatasets** (2020/11/13)
 
-源文件在<http://cas.uqam.ca/>，但下载速度很慢，我把它放在[坚果云共享](https://www.jianguoyun.com/p/DZGAYXEQ3cTHBhjtn80D)。下载后选择install from local archive file。
+源文件在<http://cas.uqam.ca/>，但下载速度很慢，我把它放在[坚果云共享](https://www.jianguoyun.com/p/DdFyh74Q3cTHBhio2M0D)。下载后选择install from local archive file。
 
 **👉  微信群** (2020/11/08)
 
