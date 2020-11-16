@@ -10,4 +10,5 @@ reticulate-常见命令
 切换r关联的conda环境
 python
 conda环境
+常用的conda命令
 tensorflowpytorch-gpu-version

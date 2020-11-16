@@ -18,6 +18,8 @@
 
 - [Miniconda](https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/?C=N&O=D)
 
+- [常用Conda命令](https://docs.conda.io/projects/conda/en/latest/commands.html#)
+
 - [TUNA镜像源](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/)
 
 - [R interface to Tensorflow and Keras](https://keras.rstudio.com/)
@@ -33,7 +35,6 @@
 - [CUDA](https://developer.nvidia.com/cuda-toolkit-archivE)
 
 - [cuDNN](https://developer.nvidia.com/rdp/form/cudnn-download-survey)
-
 
 ## 克隆代码
 
@@ -63,9 +64,7 @@
 
 ## 建立环境
 
-首先下载并安装[Anaconda](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/)或者[Miniconda](https://docs.conda.io/en/latest/miniconda.html)。
-
-以下步骤中，当你发现安装非常慢时，可以尝试4G网络，尝试VPN，尝试改变CRAN的镜像源，或尝试改变conda的镜像源。conda镜像源通过修改用户目录下的`.condarc`文件使用[TUNA镜像源](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/)。
+在以下步骤中，当你发现安装非常慢时，可以尝试4G网络，尝试VPN，尝试改变CRAN的镜像源，或尝试改变conda的镜像源。conda镜像源通过修改用户目录下的`.condarc`文件使用[TUNA镜像源](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/)，但该镜像源可能有更新延迟。
 
 ### R interface to Keras
 
@@ -79,75 +78,93 @@
 
 2. `install_tensorflow()`
 
-  这时大概率会出现
+    这时大概率会出现
 
+    ```
     No non-system installation of Python could be found.
     Would you like to download and install Miniconda?
     Miniconda is an open source environment management system for Python.
     See https://docs.conda.io/en/latest/miniconda.html for more details.
     Would you like to install Miniconda? [Y/n]:
+    ```
   
-  虽然你可能已经有Anaconda和Python，但R没有“智能”地识别出来，这时仍建议你点`Y`，让R自己装一下自己能更好识别的`Minicon   da`, 这个命令还会自动建立一个独立conda环境`r-reticulate`，并在其中装好`tensorflow, keras`等。
+    虽然你可能已经有Anaconda和Python，但R没有“智能”地识别出来，这时仍建议你选`Y`，让R自己装一下自己能更好识别的`Miniconda`, 这个命令还会自动建立一个独立conda环境`r-reticulate`，并在其中装好`tensorflow, keras`等。
   
 3. 上步如果正常运行，结束后会自动重启R。这时你运行`library(tensorflow)`然后`tf$constant("Hellow Tensorflow")`，如果没报错，那继续`install_packages("keras")`,`library("keras")`。
 
-  用以下代码验证安装成功
+    用以下代码验证安装成功
 
+    ```
     model <- keras_model_sequential() %>% 
     layer_flatten(input_shape = c(28, 28)) %>% 
     layer_dense(units = 128, activation = "relu") %>% 
     layer_dropout(0.2) %>% 
     layer_dense(10, activation = "softmax")
     summary(model)
-    
-  如果出现以下错误
-  
+    ```
+
+    如果出现以下错误
+
+    ```  
     错误: Installation of TensorFlow not found.
     Python environments searched for 'tensorflow' package:
-    C:\Users\Guangyuan\AppData\Local\r-miniconda\envs\r-reticulate\python.exe
+    C:\Users\...\AppData\Local\r-miniconda\envs\r-reticulate\python.exe
     You can install TensorFlow using the install_tensorflow() function.
+    ```
   
-  抱歉！我暂时没找到解决办法。。。但我们可以在conda下安装好tensorflow然后关联到R，或者用其他方式让R找到其他方式安装的`tensorflow`。这时，你先把之前失败的安装`C:\Users\Guangyuan\AppData\Local\r-miniconda`，这个文件夹完全删掉。然后参考以下安装步骤。
+    这个错误通常是由于`r-reticulate`中`tensorflow`和其他包的依赖关系发生错误，或者`tensorflow`版本太低，你可以更换镜像源、使用conda/pip install调整该环境中的`tensorflow`版本和依赖关系。
+  
+    更好的方式是在conda下安装好指定版本的`tensorflow`然后关联到R，或者用其他方式让R找到其他方式安装的`tensorflow`。这时，你先把之前失败的安装`C:\Users\...\AppData\Local\r-miniconda`，这个文件夹完全删掉。然后参考以下安装步骤。
   
 #### 使用reticulate关联conda环境
 
-1. 运行`Anaconda Prompt`或者`Anaconda Powershell Prompt`，在命令行输入`conda create -n r-tensorflow tensorflow`，conda会创建一个独立的`r-tensorflow`环境，并在其中安装`tensorflow`包。
+1. 下载并安装[Anaconda](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/)或者[Miniconda](https://docs.conda.io/en/latest/miniconda.html)。
 
-2. 继续在命令行运行`conda activate r-tensorflow`加载刚刚安装的环境，并`pip install h5py pyyaml requests Pillow scipy`在该环境下安装keras依赖的包。至此，R需要的tensorflow环境已经准备好，接下来让R关联此环境。
+2. 运行`Anaconda Prompt`或者`Anaconda Powershell Prompt`，在命令行输入`conda create -n r-tensorflow tensorflow=2.1.0`，conda会创建一个独立的`r-tensorflow`环境，并在其中安装`tensorflow`包。
 
-3. 重启R，`library("reticulate")`然后`use_condaenv("r-tensorflow",required=T)`,这时R就和上面建立的环境关联好。
+3. 继续在命令行运行`conda activate r-tensorflow`加载刚刚安装的环境，并`pip install h5py pyyaml requests Pillow scipy`在该环境下安装`keras`依赖的包。至此，R需要的tensorflow环境已经准备好，接下来让R关联此环境。
 
-4. `library("keras“)`。这里假设你已经装好`tensorflow`和`keras`包。
+4. 重启R，`library("reticulate")`然后`use_condaenv("r-tensorflow",required=T)`,这时R就和上面建立的环境关联好。
 
-  用以下代码验证安装成功
+5. `library("keras“)`。这里假设你已经装好`tensorflow`和`keras`包。
 
+    用以下代码验证安装成功
+    
+    ```
     model <- keras_model_sequential() %>% 
     layer_flatten(input_shape = c(28, 28)) %>% 
     layer_dense(units = 128, activation = "relu") %>% 
     layer_dropout(0.2) %>% 
     layer_dense(10, activation = "softmax")
     summary(model)
+    ```
  
 #### 指定conda安装
 
-1. 命令行输入`which -a python`，找到Anaconda中Python的路径记为`anapy`。
+1. 下载并安装[Anaconda](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/)或者[Miniconda](https://docs.conda.io/en/latest/miniconda.html)。
 
-2. R中`install_packages("tensorflow")`，然后
+2. 命令行输入`which -a python`，找到Anaconda中Python的路径记为`anapy`。
 
-    install_tensorflow(method="conda",conda = "anapy",envname="r-tensorflow")
-`
-  此命令会在conda下创建`r-tensorflow`的环境并装好tensorflow包。
+3. R中`install_packages("tensorflow")`，然后
+
+    ```
+    install_tensorflow(method = "conda", conda = "anapy", envname = "r-tensorflow", version = "2.1.0")
+    ```
+    
+    此命令会在conda下创建`r-tensorflow`的环境并装好tensorflow包。
   
-3. `install_packages("keras"); library("keras")`
+4. `install_packages("keras"); library("keras")`
 
-  用以下代码验证安装成功
-
+    用以下代码验证安装成功
+    
+    ```
     model <- keras_model_sequential() %>% 
     layer_flatten(input_shape = c(28, 28)) %>% 
     layer_dense(units = 128, activation = "relu") %>% 
     layer_dropout(0.2) %>% 
     layer_dense(10, activation = "softmax")
     summary(model)
+    ```
 
 #### 使用reticulate安装
 
@@ -157,18 +174,20 @@
 
 3. `install_miniconda()`，将会安装`miniconda`并创建一个`r-reticulate`conda环境。此环境为R默认调用的Python环境。
 
-4. （重启R）`library("tensorflow"); install_tensorflow()`，将会在`r-reticulate`安装`tensorflow`。
+4. （重启R）`library("tensorflow"); install_tensorflow(version="2.1.0")`，将会在`r-reticulate`安装`tensorflow`。
 
 5. `install_packages("keras"); library("keras")`
 
-  用以下代码验证安装成功
-
+    用以下代码验证安装成功
+    
+    ```
     model <- keras_model_sequential() %>% 
     layer_flatten(input_shape = c(28, 28)) %>% 
     layer_dense(units = 128, activation = "relu") %>% 
     layer_dropout(0.2) %>% 
     layer_dense(10, activation = "softmax")
     summary(model)
+    ```
 
 ### R interface to Python
 
@@ -202,13 +221,13 @@ R包`reticulate`为`tensorflow`的依赖包，当你装`tensorflow`它也被自�
 
 ### Python
 
-一般在每个Python（conda）环境都需要安装一个Jupyter Notebook方便使用该环境的科学计算包。
+一般在每个Python（Conda）环境都需要安装一个Jupyter Notebook (conda install notebook)。
 
 #### Conda环境
 
 Python（conda）环境建立比较简单，在`使用reticulate关联conda环境`我们已经建立过一个环境`r-tensorflow`。具体操作如下:
 
-1. 建立独立环境`conda create env -n env-name python=3.8 tensorflow notebook`。该命令会建立`env-name`的环境，并在其中安装`python=3.8`,`tensorflow`，`notebook`包及其依赖包。
+1. 建立独立环境`conda create -n env-name python=3.8 tensorflow=2.1.0 notebook`。该命令会建立`env-name`的环境，并在其中安装`python=3.8`,`tensorflow`，`notebook`包及其依赖包。
 
 2. 激活环境`conda activate env-name`.
 
@@ -218,6 +237,31 @@ Python（conda）环境建立比较简单，在`使用reticulate关联conda环�
 
 5. 如遇到缺少的包，在该环境`env-name`下使用`conda install ***`安装缺少的包。
 
+#### 常用的Conda命令
+
+- `conda create -n env-name2 --clone env-name1`:复制环境
+
+- `conda env list`：列出所有环境
+
+- `conda deactivate`：退出当前环境
+
+- `conda remove -n env-name --all`：删除环境`env-name`中的所有包
+
+- `conda list -n env-name`: 列出环境`env-name`所安装的包
+
+- `conda clean -p`：删除不使用的包
+
+- `conda clean -t`：删除下载的包
+
+- `conda clean -a`：删除所有不必要的包
+
+- `pip freeze > pip_pkg.txt`, `pip install -r pip_pkg.txt` 保存当前环境PyPI包版本，从文件安装PyPI包
+
+- `conda env export > conda_pkg.yaml`, `conda env export -n env_name > conda_pkg.yaml`, `conda env create -n env-name2 --file conda_pkg.yaml` 保存当前/env-name环境所有包，从文件安装Conda包
+
+- `conda list --explicit > spec-list.txt`,`conda list --export > spec-list.txt`, `conda create  --name env-name2 --file spec-list.txt` 保存当前环境Conda包及其下载地址，同系统从文件安装Conda包
+
+
 #### Tensorflow/Pytorch GPU version
 
 `Tensorflow`可以综合使用CPU和GPU进行计算，GPU的硬件结构适进行卷积运算，所以适于CNN，RNN等模型的求解。
@@ -226,9 +270,9 @@ Python（conda）环境建立比较简单，在`使用reticulate关联conda环�
 
 [校级计算云](https://cc.ruc.edu.cn/home)和学院计算云有专门的IT人员帮你解决如本页所示的大部分IT问题。
 
-你的机器如果有GPU，可以大致按如下步骤让GPU发挥它的并行计算能力，关键点是让GPU型号、CUDA版本、Tensorflow或Pytorch版本彼此匹配，且彼此“相连”。百度或者必应上有很多相关资料可以作为参考。
+你的机器如果有GPU，可以按如下步骤让GPU发挥它的并行计算能力，关键点是让GPU型号、GPU驱动、CUDA版本、Tensorflow或Pytorch版本彼此匹配，且彼此“相连”。百度或者必应上有很多相关资料可以作为参考。
 
-1.  查看电脑GPU，以及支持的[CUDA版本](https://developer.nvidia.com/cuda-gpus)。 或者在终端执行以下命令：nvidia-smi，查看你的NVIDIA显卡驱动支持的CUDA版本。
+1.  查看电脑GPU和驱动，以及支持的[CUDA版本](https://developer.nvidia.com/cuda-gpus)。 或者在终端执行以下命令：nvidia-smi，查看你的NVIDIA显卡驱动支持的CUDA版本。
 
 2. 查看各个[Tensorflow版本](https://tensorflow.google.cn/install/source?hl=zh-cn#linux)，[Pytorch版本](https://pytorch.org/get-started/locally/)对应的CUDA和cuDNN.
 
