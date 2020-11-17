@@ -1,7 +1,7 @@
 --- 
 title: "现代精算统计模型"
 author: "Modern Actuarial Models"
-date: "2020-11-17 00:10:29"
+date: "2020-11-17 17:09:01"
 site: bookdown::bookdown_site
 output: bookdown::gitbook
 documentclass: book
@@ -28,9 +28,9 @@ editor_options:
 
 据观察，在MAC OS和Linux系统下安装`keras`成功的比例较高。WIN系统下，Python各个包的依赖以及和R包的匹配有一定的问题，今天是通过更换镜像源解决了R中无法加载`tensorflow.keras`模块的问题，推测是TUNA源中WIN包依赖关系没有及时更新。
 
-为了解决镜像源更新延迟、或者tensorflow版本过低的问题，这里共享WIN下经测试的[conda环境](https://www.jianguoyun.com/p/DVX62MgQ3cTHBhiq2M0D)配置。下载该文档，从该文档所在文件夹启动命令行，使用命令`conda create --name <env> --file filename.txt`，安装该conda环境。在R中使用`reticulate::use_condaenv("<env>",required=T)`关联该环境。
+为了解决镜像源更新延迟、或者tensorflow版本过低的问题，这里共享WIN下经测试的[conda环境](https://www.jianguoyun.com/p/DcwPgUgQ3cTHBhi1-s0D)配置。下载该文档，从该文档所在文件夹启动命令行，使用命令`conda env create --name <env> --file filename.yaml`，安装该conda环境。在R中使用`reticulate::use_condaenv("<env>",required=T)`关联该环境。
 
-另外，可下载MAC OS系统下经测试的[conda环境](https://www.jianguoyun.com/p/DYethK4Q3cTHBhjr4s0D)配置，和[PyPI包](https://www.jianguoyun.com/p/DYyZTtYQ3cTHBhju4s0D)配置。可通过`conda env create -n <env> --file filename.yaml`和`pip install -r filename.txt`安装。
+另外，可下载MAC OS系统下经测试的[conda环境](https://www.jianguoyun.com/p/DYethK4Q3cTHBhjr4s0D)配置。可通过`conda env create --name <env> --file filename.yaml`安装。
 
 **👉  CASdatasets** (2020/11/13)
 

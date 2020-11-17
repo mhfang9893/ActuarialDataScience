@@ -281,9 +281,10 @@ summary(model)</code></pre></li>
 <li><p><code>conda clean -p</code>：删除不使用的包</p></li>
 <li><p><code>conda clean -t</code>：删除下载的包</p></li>
 <li><p><code>conda clean -a</code>：删除所有不必要的包</p></li>
-<li><p><code>pip freeze &gt; pip_pkg.txt</code>, <code>pip install -r pip_pkg.txt</code> 保存当前环境PyPI包版本，从文件安装PyPI包</p></li>
-<li><p><code>conda env export &gt; conda_pkg.yaml</code>, <code>conda env export -n env_name &gt; conda_pkg.yaml</code>, <code>conda env create -n env-name2 --file conda_pkg.yaml</code> 保存当前/env-name环境所有包，从文件安装Conda包</p></li>
-<li><p><code>conda list --explicit &gt; spec-list.txt</code>,<code>conda list --export &gt; spec-list.txt</code>, <code>conda create  --name env-name2 --file spec-list.txt</code> 保存当前环境Conda包及其下载地址，同系统从文件安装Conda包</p></li>
+<li><p><code>pip freeze &gt; pip_pkg.txt</code>, <code>pip install -r pip_pkg.txt</code> 保存当前环境PyPI包版本，从文件安装PyPI包（需同系统）</p></li>
+<li><p><code>conda env export &gt; conda_pkg.yaml</code>, <code>conda env export --name env_name &gt; conda_pkg.yaml</code>, <code>conda env create --name env-name2 --file conda_pkg.yaml</code> 保存当前/env-name环境所有包，从文件安装所有包（需同系统）</p></li>
+<li><p><code>conda list --explicit &gt; spec-list.txt</code>, <code>conda create --name env-name2 --file spec-list.txt</code> 保存当前环境Conda包下载地址，从文件安装Conda包（需同系统）</p></li>
+<li><p><code>conda list --export &gt; spec-list.txt</code>, <code>conda create --name env-name2 --file spec-list.txt</code> 保存当前环境所有包（类似<code>conda env export</code>），从文件安装所有包（需同系统）</p></li>
 </ul>
 </div>
 <div id="tensorflowpytorch-gpu-version" class="section level4">

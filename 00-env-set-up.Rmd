@@ -255,11 +255,13 @@ Python（conda）环境建立比较简单，在`使用reticulate关联conda环�
 
 - `conda clean -a`：删除所有不必要的包
 
-- `pip freeze > pip_pkg.txt`, `pip install -r pip_pkg.txt` 保存当前环境PyPI包版本，从文件安装PyPI包
+- `pip freeze > pip_pkg.txt`, `pip install -r pip_pkg.txt` 保存当前环境PyPI包版本，从文件安装PyPI包（需同系统）
 
-- `conda env export > conda_pkg.yaml`, `conda env export -n env_name > conda_pkg.yaml`, `conda env create -n env-name2 --file conda_pkg.yaml` 保存当前/env-name环境所有包，从文件安装Conda包
+- `conda env export > conda_pkg.yaml`, `conda env export --name env_name > conda_pkg.yaml`, `conda env create --name env-name2 --file conda_pkg.yaml` 保存当前/env-name环境所有包，从文件安装所有包（需同系统）
 
-- `conda list --explicit > spec-list.txt`,`conda list --export > spec-list.txt`, `conda create  --name env-name2 --file spec-list.txt` 保存当前环境Conda包及其下载地址，同系统从文件安装Conda包
+- `conda list --explicit > spec-list.txt`, `conda create --name env-name2 --file spec-list.txt` 保存当前环境Conda包下载地址，从文件安装Conda包（需同系统）
+
+- `conda list --export > spec-list.txt`, `conda create --name env-name2 --file spec-list.txt` 保存当前环境所有包（类似`conda env export`），从文件安装所有包（需同系统）
 
 
 #### Tensorflow/Pytorch GPU version
