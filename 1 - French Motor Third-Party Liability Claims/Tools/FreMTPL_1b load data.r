@@ -56,7 +56,8 @@ dat2$BonusMalusGLM <- as.integer(pmin(dat2$BonusMalus, 150))
 dat2$DensityGLM <- as.numeric(log(dat2$Density))
 dat2[,"Region"] <-relevel(dat2[,"Region"], ref="Centre") # modi
 
-set.seed(10)
+RNGversion("3.5.0")
+set.seed(100)
 ll <- sample(c(1:nrow(dat2)), round(0.9*nrow(dat2)), replace = FALSE)
 learn.GLM <- dat2[ll,]
 test.GLM <- dat2[-ll,]

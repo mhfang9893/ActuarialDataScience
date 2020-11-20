@@ -1,0 +1,332 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+load packages
+```{r} 
+library(CASdatasets)
+library(keras)
+library(data.table)
+library(glmnet)
+library(plyr)
+library(mgcv)
+#library(rpart)
+#library(rpart.plot)
+library(Hmisc)
+#library(randomForest)
+library(distRforest)
+library(gbm)
+data(freMTPL2freq)
+data(freMTPL2sev)
+textwidth<-7.3 #inch
+#fwrite(freMTPL2freq,"data/freMTPL2freq.txt")
+#freMTPL2freq<-fread("data/freMTPL2freq_mac.txt")
+```
+
+## clean data
+```{r}
+dat <- freMTPL2freq
+dat$VehGas <- factor(dat$VehGas)      # consider VehGas as categorical
+dat$ClaimNb <- pmin(dat$ClaimNb, 4)   # correct for unreasonable observations (that might be data error)
+dat$Exposure <- pmin(dat$Exposure, 1) # correct for unreasonable observations (that might be data error)
+str(dat)
+```
+
+## poisson deviance statistics
+```{r}
+Poisson.Deviance <- function(pred,obs)
+  {200*(sum(pred)-sum(obs)+sum(log((obs/pred)^(obs))))/length(pred)}
+keras_poisson_dev<-function(y_hat,y_true)
+  {sum(y_hat-y_true*log(y_hat))/length(y_true)}
+f_keras<-function(x) x-x*log(x)
+f_keras(0.1);f_keras(0.2)
+plot(seq(0.1,0.2,0.01),f_keras(seq(0.1,0.2,0.01)))
+```
+
+## feature pre-processing for GLM
+```{r}
+dat1 <- dat
+dat1$Area <- as.integer(dat1$Area)
+dat1$VehPowerFac <- as.factor(pmin(dat1$VehPower,9))
+dat1[,"VehPowerFac"] <-relevel(dat1[,"VehPowerFac"], ref="6")
+dat1$VehAge <- pmin(dat1$VehAge,20)
+VehAgeFac <- cbind(c(0:110), c(1, rep(2,5), rep(3,5),rep(4,5), rep(5,5), rep(6,111-21)))
+dat1$VehAgeFac <- as.factor(VehAgeFac[dat1$VehAge+1,2])
+dat1[,"VehAgeFac"] <-relevel(dat1[,"VehAgeFac"], ref="2")
+dat1$DrivAge <- pmin(dat1$DrivAge,90)
+DrivAgeFac <- cbind(c(18:100), c(rep(1,21-18), rep(2,26-21), rep(3,31-26), rep(4,41-31), rep(5,51-41), rep(6,71-51), rep(7,101-71)))
+dat1$DrivAgeFac <- as.factor(DrivAgeFac[dat1$DrivAge-17,2])
+dat1[,"DrivAgeFac"] <-relevel(dat1[,"DrivAgeFac"], ref="5")
+dat1$DrivAgeLn<-log(dat1$DrivAge)
+dat1$DrivAge2<-dat1$DrivAge^2
+dat1$DrivAge3<-dat1$DrivAge^3
+dat1$DrivAge4<-dat1$DrivAge^4
+dat1$BonusMalus <- as.integer(pmin(dat1$BonusMalus, 150))
+dat1$DensityLn <- as.numeric(log(dat1$Density))
+dat1[,"Region"] <-relevel(dat1[,"Region"], ref="R24")
+str(dat1)
+design_matrix<-model.matrix( ~ ClaimNb + Exposure + Area + VehPowerFac + VehAgeFac + DrivAge + DrivAgeLn + DrivAge2 + DrivAge3 + DrivAge4 + BonusMalus + VehBrand + VehGas + DensityLn + Region, data=dat1)[,-1] # VehPower, VehAge, and DrivAge as factor variables
+#design_matrix2<-model.matrix( ~ ClaimNb + Exposure + Area + VehPower + VehAge + DrivAge + BonusMalus + VehBrand + VehGas + DensityLn + Region, data=dat1)[,-1] # VehPower, VehAge, and DrivAge as continuous variables
+#dim(design_matrix2)
+```
+
+## choosing training\validation\test split
+```{r}
+seed_split<-11
+summary(dat1$Exposure)
+sum(dat1$Exposure==1)
+hist(dat1$Exposure[dat1$Exposure<1])
+exp_claim<-aggregate(dat1$Exposure,by=list(as.factor(dat1$ClaimNb)),sum)
+round(exp_claim$x/sum(exp_claim$x),2)
+index_zero<-which(dat1$ClaimNb==0)
+index_one<-which(dat1$ClaimNb>0)
+prop_zero<-round(length(index_zero)/(length(index_one)+length(index_zero)),2);prop_zero
+prop_one<-round(length(index_one)/(length(index_one)+length(index_zero)),2);prop_one
+size_valid<-round(nrow(dat1)*0.2,0)
+size_test<-size_valid
+size_train<-nrow(dat1)-2*size_valid
+set.seed(seed_split)
+index_train_0<-sample(index_zero,size_train*prop_zero)
+index_train_1<-sample(index_one, size_train-length(index_train_0))
+index_train<-union(index_train_0,index_train_1)
+length(index_train);size_train
+index_valid<-c(sample(setdiff(index_zero,index_train_0),round(size_valid*prop_zero,0)), sample(setdiff(index_one,index_train_1),size_valid-round(size_valid*prop_zero,0)))
+length(index_valid);size_valid
+index_test<-setdiff(union(index_zero,index_one),union(index_train,index_valid))
+index_learn<-union(index_train,index_valid)
+length(index_train);length(index_valid);length(index_test)
+dat1_train<-dat1[index_train,]
+dat1_valid<-dat1[index_valid,]
+dat1_test<-dat1[index_test,]
+dat1_learn<-dat1[index_learn,]
+sum(dat1_train$ClaimNb)/sum(dat1_train$Exposure)
+sum(dat1_valid$ClaimNb)/sum(dat1_valid$Exposure)
+sum(dat1_test$ClaimNb)/sum(dat1_test$Exposure)
+sum(dat1_learn$ClaimNb)/sum(dat1_learn$Exposure)
+matrix_train<-design_matrix[index_train,]
+matrix_valid<-design_matrix[index_valid,]
+matrix_test<-design_matrix[index_test,]
+matrix_learn<-design_matrix[index_learn,]
+dat1_learn_gbm<-data.frame(ClaimNb=dat1_learn$ClaimNb,Exposure=dat1_learn$Exposure,Area=dat1_learn$Area,VehPower=dat1_learn$VehPower,VehAge=dat1_learn$VehAge,DrivAge=dat1_learn$DrivAge,BonusMalus=dat1_learn$BonusMalus,VehBrand=dat1_learn$VehBrand,VehGas=dat1_learn$VehGas,DensityLn=dat1_learn$DensityLn,Region=dat1_learn$Region)
+train_pro<-size_train/(size_train+size_valid)
+```
+
+##  glm and gam
+```{r}
+d.glm0 <- glm(ClaimNb ~ 1 + offset(log (Exposure)), data=data.frame(matrix_learn), family=poisson())
+#summary(d.glm0)
+dat1_test$fitGLM0 <- predict(d.glm0, newdata=data.frame(matrix_test), type="response")
+keras_poisson_dev(dat1_test$fitGLM0,matrix_test[,1])
+names(data.frame(matrix_learn))
+{t1 <- proc.time()
+d.glm1 <- glm(ClaimNb ~ .-Exposure + offset(log(Exposure)), data=data.frame(matrix_learn), family=poisson())
+(proc.time()-t1)}
+#summary(d.glm1)
+dat1_train$fitGLM1 <- predict(d.glm1, newdata=data.frame(matrix_train), type="response")
+dat1_valid$fitGLM1 <- predict(d.glm1, newdata=data.frame(matrix_valid), type="response")
+dat1_test$fitGLM1 <- predict(d.glm1, newdata=data.frame(matrix_test), type="response")
+dat1_learn$fitGLM1 <- predict(d.glm1, newdata=data.frame(matrix_learn), type="response")
+keras_poisson_dev(dat1_test$fitGLM1,matrix_test[,1])
+
+#  GAM marginals improvement (VehAge and BonusMalus)
+{t1 <- proc.time()
+dat.GAM <- ddply(dat1_learn, .(VehAge,BonusMalus), summarise, fitGLM1=sum(fitGLM1), ClaimNb=sum(ClaimNb))
+set.seed(1)
+d.gam <- gam(ClaimNb ~ s(VehAge, bs="cr")+s(BonusMalus, bs="cr") + offset(log(fitGLM1)), data=dat.GAM, method="GCV.Cp", family=poisson)
+(proc.time()-t1)}
+summary(d.gam)
+dat1_train$fitGAM1 <- predict(d.gam, newdata=dat1_train,type="response")
+dat1_valid$fitGAM1 <- predict(d.gam, newdata=dat1_valid,type="response")
+dat1_test$fitGAM1 <- predict(d.gam, newdata=dat1_test,type="response")
+keras_poisson_dev(dat1_test$fitGAM1, dat1_test$ClaimNb)
+```
+
+# lasso variable selection
+```{r,eval=F}
+# stepwise selection； this takes a few minutes
+d.glm00 <- glm(ClaimNb ~ VehAgeFac1 + VehAgeFac3 + VehAgeFac4 + VehAgeFac5 + DrivAge + DrivAge2 + DrivAge3 + DrivAge4 + DrivAgeLn + BonusMalus + VehBrandB12 + VehGasRegular + DensityLn + offset(log (Exposure)), data=data.frame(matrix_learn), family=poisson())
+{t1 <- proc.time()
+d.glm2<-step(d.glm00,direction="forward",trace = 1,scope = list(lower=formula(d.glm00),upper=formula(d.glm1)))
+(proc.time()-t1)}
+summary(d.glm2)
+dat1_test$fitGLM2 <- predict(d.glm2, newdata=data.frame(matrix_test), type="response")
+keras_poisson_dev(dat1_test$fitGLM2,data.frame(matrix_test)$ClaimNb)
+
+# lasso regression； this takes a few minutes
+alpha0=1 # 1 for lasso, 0 for ridge.
+set.seed(7)
+{t1 <- proc.time()
+cvfit = cv.glmnet(matrix_learn[,-c(1,2)], matrix_learn[,1], family = "poisson", offset=log(matrix_learn[,2]),alpha = alpha0,nfolds = 5,trace.it = 1)
+(proc.time()-t1)}
+cvfit$lambda.min #10^-5
+cvfit$lambda.1se # 0.0016
+plot(cvfit)
+d.glm3 = glmnet(matrix_learn[,-c(1,2)], matrix_learn[,1], family = "poisson", offset=log(matrix_learn[,2]), alpha=alpha0, lambda =cvfit$lambda.min, trace.it = 1)
+dat1_test$fitLasso<-predict(d.glm3, newx = matrix_test[,-c(1,2)], newoffset=log(matrix_test[,2]),type = "response")
+keras_poisson_dev(dat1_test$fitLasso,matrix_test[,1])
+```
+
+# Possion tree
+```{r}
+# cross validation using xval in rpart.control
+names(dat1_learn)
+set.seed(1)
+{t1 <- proc.time()
+tree0<-rpart(cbind(Exposure, ClaimNb) ~ Area + VehPower + VehAge + DrivAge + BonusMalus + VehBrand + VehGas + DensityLn + Region, data = dat1_learn, method = "poisson", control = rpart.control (xval=5, minbucket=1000 ,cp=10^-5,maxcompete = 0,maxsurrogate = 0))
+(proc.time()-t1)}
+#printcp(tree0)
+x0 <- log10(tree0$cptable[,1])
+err0<-tree0$cptable[,4]
+std0<-tree0$cptable[,5]
+xmain <- "cross-validation error plot"
+xlabel <- "cost-complexity parameter (log-scale)"
+ylabel <- "relative CV error"
+
+pdf("plots/tree_cv.pdf",height =textwidth,width=textwidth,pointsize =11)
+errbar(x=x0, y=err0*100, yplus=(err0+std0)*100, yminus=(err0-std0)*100, xlim=rev(range(x0)), col="blue", main=xmain, ylab=ylabel, xlab=xlabel)
+lines(x=x0, y=err0*100, col="blue")
+abline(h=c(min(err0+std0)*100), lty=1, col="orange")
+abline(h=c(min(err0)*100), lty=1, col="magenta")
+abline(v=-3.32,lty=2)
+legend(x="topright", col=c("blue", "orange", "magenta","black"), lty=c(1,1,1,2), lwd=c(1,1,1,1), pch=c(19,-1,-1,-1), legend=c("tree0", "1-SD rule", "min.CV rule","log cp = -3.32"))
+dev.off()
+tree1 <- prune(tree0, cp=10^-3.32) # cp=10^-3.32
+tree11<- prune(tree0, cp=tree0$cptable[which.min(err0),1]) # cp=10^-4
+printcp(tree1)
+printcp(tree11)
+#tree1
+dat1_test$fitRT_1se <- predict(tree1, newdata=dat1_test)*dat1_test$Exposure
+dat1_test$fitRT_min <- predict(tree11, newdata=dat1_test)*dat1_test$Exposure
+keras_poisson_dev(dat1_test$fitRT_1se, dat1_test$ClaimNb)
+keras_poisson_dev(dat1_test$fitRT_min, dat1_test$ClaimNb)
+tree1$variable.importance
+tree11$variable.importance
+
+# K-fold cross-validation using xpred.rpart
+# tree0$cptable
+set.seed(1)
+{t1 <- proc.time()
+tree00<-rpart(cbind(Exposure, ClaimNb) ~ Area + VehPower + VehAge + DrivAge + BonusMalus + VehBrand + VehGas + DensityLn + Region, data = dat1_learn, method = "poisson", control = rpart.control (xval=1, minbucket=1000 ,cp=10^-5,maxcompete = 0,maxsurrogate = 0))
+(proc.time()-t1)}
+K <- 10                  
+xgroup <- rep(1:K, length = nrow(dat1_learn))
+xfit <- xpred.rpart(tree00, xgroup)
+dim(xfit)
+for (i in 1:n_subtrees){
+ err_group<-rep(NA,K)
+ for (k in 1:K){
+  ind_group <- which(xgroup ==k)  
+  err_group[k] <- keras_poisson_dev(dat1_learn[ind_group,"Exposure"]*xfit[ind_group,i],dat1_learn[ind_group,"ClaimNb"])
+  }
+  err1[i] <- mean(err_group)             
+  std1[i] <- sd(err_group)
+}
+x1 <- log10(tree00$cptable[,1])
+xmain <- "cross-validation error plot"
+xlabel <- "cost-complexity parameter (log-scale)"
+ylabel <- "CV error (in 10^(-2))"
+errbar(x=x1, y=err1*100, yplus=(err1+std1)*100, yminus=(err1-std1)*100, xlim=rev(range(x1)), col="blue", main=xmain, ylab=ylabel, xlab=xlabel)
+lines(x=x1, y=err1*100, col="blue")
+abline(h=c(min(err1+std1)*100), lty=1, col="orange")
+abline(h=c(min(err1)*100), lty=1, col="magenta")
+abline(v=-3.12,lty=2)
+legend(x="topright", col=c("blue", "orange", "magenta","black"), lty=c(1,1,1,2), lwd=c(1,1,1,1), pch=c(19,-1,-1,-1), legend=c("tree1", "1-SD rule", "min.CV rule","log cp = -3.12"))
+tree2 <- prune(tree00, cp=10^-3.12)
+tree22 <- prune(tree00, cp=tree00$cptable[which.min(err1),1])
+printcp(tree2)
+printcp(tree22)
+dat1_test$fitRT2 <- predict(tree2, newdata=dat1_test)*dat1_test$Exposure
+dat1_test$fitRT22 <- predict(tree22, newdata=dat1_test)*dat1_test$Exposure
+keras_poisson_dev(dat1_test$fitRT2, dat1_test$ClaimNb)
+keras_poisson_dev(dat1_test$fitRT22, dat1_test$ClaimNb)
+sum((dat1_test$fitRT22-dat1_test$fitRT11)^2)
+tree2$variable.importance
+tree22$variable.importance
+```
+
+# Random forest
+```{r}
+ntrees0<-200
+set.seed(1)
+{t1 <- proc.time()
+forest1<-rforest(cbind(Exposure, ClaimNb) ~ Area + VehPower + VehAge + DrivAge + BonusMalus + VehBrand + VehGas + DensityLn + Region, data = dat1_train, method = "poisson", control = rpart.control (xval=0, minbucket=1000 ,cp=10^-5,maxcompete = 0,maxsurrogate = 0),parms=list(shrink=0), ncand=5,ntrees = ntrees0, subsample = 0.5, redmem = T)
+(proc.time()-t1)}
+fit_valid<-rep(0,nrow(dat1_valid))
+error_valid<-rep(0,ntrees0)
+for (i in 1:ntrees0){
+  fit_valid<-fit_valid+predict(forest1[[i]], newdata=dat1_valid)*dat1_valid$Exposure
+  fit_valid_norm <- fit_valid/i
+  error_valid[i]<-Poisson.Deviance(fit_valid_norm, dat1_valid$ClaimNb)
+}
+pdf("plots/random_forest_error.pdf",height =textwidth,width=textwidth,pointsize =11)
+plot(error_valid,type="l",xlab="number of trees",ylab="validation error in 10^-2")
+dev.off()
+
+best.trees=100
+fitRF<-rep(0,nrow(dat1_test))
+for (i in 1:best.trees){
+  fitRF<-fitRF+predict(forest1[[i]], newdata=dat1_test)*dat1_test$Exposure
+}
+dat1_test$fitRF <- fitRF/best.trees
+keras_poisson_dev(dat1_test$fitRF, dat1_test$ClaimNb)
+names(forest1[[2]]$variable.importance)
+sum(forest1[[3]]$variable.importance)
+```
+
+# Boosting Poisson tree
+```{r}
+set.seed(1)
+{t1 <- proc.time()
+gbm1 <- gbm(ClaimNb ~ Area + VehPower + VehAge + DrivAge + BonusMalus + VehBrand + VehGas + DensityLn + Region + offset(log(Exposure)), data=dat1_learn_gbm, distribution="poisson",n.trees=200, shrinkage=0.3, interaction.depth=5, bag.fraction = 0.5, train.fraction = train_pro,cv.folds=0,n.minobsinnode = 1000,verbose = T)
+(proc.time()-t1)}
+# plot the performance
+pdf("plots/gbm_error.pdf",height =textwidth,width=textwidth,pointsize =11)
+gbm.perf(gbm1,method="test")
+legend("topright",lty=c(1,1,2),col=c("black","red","blue"),c("training error", "validation error", "best iterations"))
+dev.off()
+best.iter<-gbm.perf(gbm1,method="test")
+dat1_test$fitGBM1<-predict(gbm1, dat1_test,n.trees=best.iter,type="response")*dat1_test$Exposure
+keras_poisson_dev(dat1_test$fitGBM1,dat1_test$ClaimNb)
+# plot variable influence ?
+summary(gbm1)
+# create marginal plots
+# plot variable X1,X2,X3 after "best" iterations
+par(mfrow=c(2,2))
+plot(gbm1,5,best.iter)
+plot(gbm1,3,best.iter)
+plot(gbm1,6,best.iter)
+plot(gbm1,4,best.iter)
+
+par(mfrow=c(2,2))
+plot(gbm1,c(5,3),best.iter) 
+plot(gbm1,c(5,6),best.iter)
+plot(gbm1,c(5,4),best.iter) 
+plot(gbm1,c(3,4),best.iter,col=terrain.colors(20)) 
+```
+
+# summary
+```{r}
+dev_sum <- data.frame(model=c("Intercept","GLM","GLM Lasso","GAM","Decision tree", "Random forest","Generalized boosted model"), test_error=rep(NA,7),test_error_keras=rep(NA,7))
+dev_sum$test_error[1]<-Poisson.Deviance(dat1_test$fitGLM0,matrix_test[,1])
+dev_sum$test_error_keras[1]<-keras_poisson_dev(dat1_test$fitGLM0,matrix_test[,1])
+dev_sum$test_error[2]<-Poisson.Deviance(dat1_test$fitGLM1,matrix_test[,1])
+dev_sum$test_error_keras[2]<-keras_poisson_dev(dat1_test$fitGLM1,matrix_test[,1])
+dev_sum$test_error[3]<-Poisson.Deviance(dat1_test$fitLasso,matrix_test[,1])
+dev_sum$test_error_keras[3]<-keras_poisson_dev(dat1_test$fitLasso,matrix_test[,1])
+dev_sum$test_error[4]<-Poisson.Deviance(dat1_test$fitGAM1, dat1_test$ClaimNb)
+dev_sum$test_error_keras[4]<-keras_poisson_dev(dat1_test$fitGAM1, dat1_test$ClaimNb)
+dev_sum$test_error[5]<-Poisson.Deviance(dat1_test$fitRT_min, dat1_test$ClaimNb)
+dev_sum$test_error_keras[5]<-keras_poisson_dev(dat1_test$fitRT_min, dat1_test$ClaimNb)
+dev_sum$test_error[6]<-Poisson.Deviance(dat1_test$fitRF, dat1_test$ClaimNb)
+dev_sum$test_error_keras[6]<-keras_poisson_dev(dat1_test$fitRF, dat1_test$ClaimNb)
+dev_sum$test_error[7]<-Poisson.Deviance(dat1_test$fitGBM1,dat1_test$ClaimNb)
+dev_sum$test_error_keras[7]<-keras_poisson_dev(dat1_test$fitGBM1,dat1_test$ClaimNb)
+dev_sum[,2:3]<-round(dev_sum[,2:3],4)
+write.csv(dev_sum,"dev_sum.csv")
+dev_sum
+```
+
+
+

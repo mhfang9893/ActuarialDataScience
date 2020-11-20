@@ -1,5 +1,5 @@
+常用链接
 克隆代码
-建立环境
 r-interface-to-keras
 r自动安装
 使用reticulate关联conda环境

@@ -2,6 +2,10 @@
 
 “工欲善其事，必先利其器。”
 
+在以下步骤中，当你发现安装非常慢时，可以尝试4G网络，尝试VPN，尝试改变CRAN的镜像源，或尝试改变conda的镜像源。conda镜像源通过修改用户目录下的`.condarc`文件使用[TUNA镜像源](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/)，但该镜像源可能有更新延迟。
+
+## 常用链接
+
 准备工作中常用的链接有
 
 - [GitHub](https://github.com/JSchelldorfer/ActuarialDataScience)
@@ -62,15 +66,11 @@
 
 理论上，GitHub上所有仓库都可以采用以上方法在RStudio中管理，当然，RStudio对于R代码仓库管理最有效，因为我们可以直接在RStudio中运行仓库中的代码。
 
-## 建立环境
-
-在以下步骤中，当你发现安装非常慢时，可以尝试4G网络，尝试VPN，尝试改变CRAN的镜像源，或尝试改变conda的镜像源。conda镜像源通过修改用户目录下的`.condarc`文件使用[TUNA镜像源](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/)，但该镜像源可能有更新延迟。
-
-### R interface to Keras
+## R interface to Keras
 
 这里主要说明`keras`包的安装和使用。[Keras](https://keras.rstudio.com/)是tensorflow的API，在keras中建立的神经网络模型都由tensorflow训练。安装`keras`包主要是安装Python库tensorflow，并让R与之相关联。
 
-#### R自动安装
+### R自动安装
 
 最简单的安装方式如下：
 
@@ -116,7 +116,7 @@
   
     更好的方式是在conda下安装好指定版本的`tensorflow`然后关联到R，或者用其他方式让R找到其他方式安装的`tensorflow`。这时，你先把之前失败的安装`C:\Users\...\AppData\Local\r-miniconda`，这个文件夹完全删掉。然后参考以下安装步骤。
   
-#### 使用reticulate关联conda环境
+### 使用reticulate关联conda环境
 
 1. 下载并安装[Anaconda](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/)或者[Miniconda](https://docs.conda.io/en/latest/miniconda.html)。
 
@@ -139,7 +139,7 @@
     summary(model)
     ```
  
-#### 指定conda安装
+### 指定conda安装
 
 1. 下载并安装[Anaconda](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/)或者[Miniconda](https://docs.conda.io/en/latest/miniconda.html)。
 
@@ -166,7 +166,7 @@
     summary(model)
     ```
 
-#### 使用reticulate安装
+### 使用reticulate安装
 
 1. 重启R，`library("reticulate")`。
 
@@ -189,11 +189,11 @@
     summary(model)
     ```
 
-### R interface to Python
+## R interface to Python
 
 R包`reticulate`为`tensorflow`的依赖包，当你装`tensorflow`它也被自动安装。它可以建立R与Python的交互。
 
-#### reticulate 常见命令
+### reticulate 常见命令
 
 - `conda_list()`列出已安装的conda环境
 
@@ -205,7 +205,7 @@ R包`reticulate`为`tensorflow`的依赖包，当你装`tensorflow`它也被自�
 
 很多时候，R会创建一个独立conda环境`r-miniconda/envs/r-reticulate`。
 
-#### 切换R关联的conda环境
+### 切换R关联的conda环境
 
 根据需要，你可以切换R关联的conda环境。具体步骤为
 
@@ -219,11 +219,11 @@ R包`reticulate`为`tensorflow`的依赖包，当你装`tensorflow`它也被自�
 
 5. `py_config`查看是否关联成功。
 
-### Python
+## Python
 
 一般在每个Python（Conda）环境都需要安装一个Jupyter Notebook (conda install notebook)。
 
-#### Conda环境
+### Conda环境
 
 Python（conda）环境建立比较简单，在`使用reticulate关联conda环境`我们已经建立过一个环境`r-tensorflow`。具体操作如下:
 
@@ -237,7 +237,7 @@ Python（conda）环境建立比较简单，在`使用reticulate关联conda环�
 
 5. 如遇到缺少的包，在该环境`env-name`下使用`conda install ***`安装缺少的包。
 
-#### 常用的Conda命令
+### 常用的Conda命令
 
 - `conda create -n env-name2 --clone env-name1`:复制环境
 
@@ -264,7 +264,7 @@ Python（conda）环境建立比较简单，在`使用reticulate关联conda环�
 - `conda list --export > spec-list.txt`, `conda create --name env-name2 --file spec-list.txt` 保存当前环境所有包（类似`conda env export`），从文件安装所有包（需同系统）
 
 
-#### Tensorflow/Pytorch GPU version
+### Tensorflow/Pytorch GPU version
 
 `Tensorflow`可以综合使用CPU和GPU进行计算，GPU的硬件结构适进行卷积运算，所以适于CNN，RNN等模型的求解。
 

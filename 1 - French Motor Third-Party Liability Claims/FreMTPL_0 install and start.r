@@ -9,7 +9,7 @@
 #########  install R packages
 ##########################################
 
-install.packages("CASdatasets", repos = "http://dutangc.free.fr/pub/RRepos/", type="source")
+# install.packages("CASdatasets", repos = "http://dutangc.free.fr/pub/RRepos/", type="source")
  
 require(MASS)
 library(CASdatasets)

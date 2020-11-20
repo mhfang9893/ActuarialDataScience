@@ -11,7 +11,7 @@
 
 sub_wkd<-"1 - French Motor Third-Party Liability Claims" # modi
 
-source(paste(sub_wkd, "/Tools/FreMTPL_1b load data.R",sep="")) # modi
+source(paste(sub_wkd, "/Tools/FreMTPL_1b load data.r",sep="")) # modi
 
 # learning data
 (l2 <- ddply(learn.GLM, .(ClaimNb), summarise, n=sum(n), exp=sum(Exposure)))
@@ -25,7 +25,7 @@ sum(test.GLM$ClaimNb)/sum(test.GLM$Exposure)
 round(100*l2$n/sum(l2$n),3) 
 n_t
 
-c(Poisson.Deviance(learn.GLM$Exposure*lambda2, learn.GLM$ClaimNb),Poisson.Deviance(test.GLM$Exposure*lambda2, test.GLM$ClaimNb))
+result0<-c(Poisson.Deviance(learn.GLM$Exposure*lambda2, learn.GLM$ClaimNb),Poisson.Deviance(test.GLM$Exposure*lambda2, test.GLM$ClaimNb))
 
 ##########################################
 #########  GLM analysis
@@ -38,7 +38,7 @@ str(learn.GLM)
   d.glm1 <- glm(ClaimNb ~ VehPowerGLM + VehAgeGLM + DrivAgeGLM + BonusMalusGLM
                        + VehBrand + VehGas + DensityGLM + Region + AreaGLM, 
                        data=learn.GLM, offset=log(Exposure), family=poisson())
-(proc.time()-t1)[3]}
+(proc.time()-t1)}
                    
 summary(d.glm1)  
 #anova(d.glm1)                                             
@@ -46,7 +46,7 @@ length(d.glm1$coefficients)
 
 learn.GLM$fit <- fitted(d.glm1)
 test.GLM$fit <- predict(d.glm1, newdata=test.GLM, type="response")
-result1<-c(Poisson.Deviance(learn.GLM$fit, learn.GLM$ClaimNb),Poisson.Deviance(test.GLM$fit, test.GLM$ClaimNb))
+(result1<-c(Poisson.Deviance(learn.GLM$fit, learn.GLM$ClaimNb),Poisson.Deviance(test.GLM$fit, test.GLM$ClaimNb)))
 
 
 ### Model GLM2
@@ -62,7 +62,7 @@ length(d.glm2$coefficients)
 
 learn.GLM$fit <- fitted(d.glm2)
 test.GLM$fit <- predict(d.glm2, newdata=test.GLM, type="response")
-result2<-c(Poisson.Deviance(learn.GLM$fit, learn.GLM$ClaimNb),Poisson.Deviance(test.GLM$fit, test.GLM$ClaimNb))
+(result2<-c(Poisson.Deviance(learn.GLM$fit, learn.GLM$ClaimNb),Poisson.Deviance(test.GLM$fit, test.GLM$ClaimNb)))
 
 
 ### Model GLM3
@@ -78,13 +78,7 @@ length(d.glm3$coefficients)
 
 learn.GLM$fit <- fitted(d.glm3)
 test.GLM$fit <- predict(d.glm3, newdata=test.GLM, type="response")
-result3<-c(Poisson.Deviance(learn.GLM$fit, learn.GLM$ClaimNb),Poisson.Deviance(test.GLM$fit, test.GLM$ClaimNb))
+(result3<-c(Poisson.Deviance(learn.GLM$fit, learn.GLM$ClaimNb),Poisson.Deviance(test.GLM$fit, test.GLM$ClaimNb)))
 
-
-homo.model<-glm(ClaimNb ~ 1, 
-                data=learn.GLM, offset=log(Exposure), family=poisson())
-learn.GLM$fit <- fitted(homo.model)
-test.GLM$fit <- predict(homo.model, newdata=test.GLM, type="response")
-result0<-c(Poisson.Deviance(learn.GLM$fit, learn.GLM$ClaimNb),Poisson.Deviance(test.GLM$fit, test.GLM$ClaimNb))
 
 rbind(result0,result1,result2,result3)
