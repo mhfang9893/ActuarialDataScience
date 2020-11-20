@@ -5,7 +5,9 @@
 #########  Version March 02, 2020
 ##########################################
 
-source("./Tools/FreMTPL_1b load data.R")
+sub_wkd<-"1 - French Motor Third-Party Liability Claims" # modi
+
+source(paste(sub_wkd, "/Tools/FreMTPL_1b load data.R",sep="")) # modi
 
 str(learn.GLM)
 
@@ -22,6 +24,7 @@ tree1 <- rpart(cbind(Exposure,ClaimNb) ~ Area + VehPower + VehAge + DrivAge + Bo
 
 tree1
 printcp(tree1)
+
 rpart.plot(tree1)
 
 average_loss <- cbind(tree1$cptable[,2], tree1$cptable[,3], tree1$cptable[,3]* tree1$frame$dev[1] / n_l)

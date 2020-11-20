@@ -12,3 +12,6 @@ python
 conda环境
 常用的conda命令
 tensorflowpytorch-gpu-version
+ch1
+背景介绍
+预测模型

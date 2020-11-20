@@ -31,7 +31,8 @@
   
   
 <link rel="prev" href="index.html"/>
-
+<link rel="next" href="ch1.html"/>
+<script src="libs/header-attrs-2.5/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -49,7 +50,6 @@
 
 
 
-<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
 
@@ -71,17 +71,25 @@
 <li><a href="./">现代精算统计模型</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>👨‍🏫 欢迎</a><ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>👨‍🏫 欢迎</a>
+<ul>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html#答疑"><i class="fa fa-check"></i>🤔 答疑</a></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html#课程安排"><i class="fa fa-check"></i>🗓️ 课程安排</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="ch0.html"><a href="ch0.html"><i class="fa fa-check"></i>准备工作</a><ul>
+<li class="chapter" data-level="" data-path="ch0.html"><a href="ch0.html"><i class="fa fa-check"></i>准备工作</a>
+<ul>
 <li class="chapter" data-level="0.1" data-path="ch0.html"><a href="ch0.html#克隆代码"><i class="fa fa-check"></i><b>0.1</b> 克隆代码</a></li>
-<li class="chapter" data-level="0.2" data-path="ch0.html"><a href="ch0.html#建立环境"><i class="fa fa-check"></i><b>0.2</b> 建立环境</a><ul>
+<li class="chapter" data-level="0.2" data-path="ch0.html"><a href="ch0.html#建立环境"><i class="fa fa-check"></i><b>0.2</b> 建立环境</a>
+<ul>
 <li class="chapter" data-level="0.2.1" data-path="ch0.html"><a href="ch0.html#r-interface-to-keras"><i class="fa fa-check"></i><b>0.2.1</b> R interface to Keras</a></li>
 <li class="chapter" data-level="0.2.2" data-path="ch0.html"><a href="ch0.html#r-interface-to-python"><i class="fa fa-check"></i><b>0.2.2</b> R interface to Python</a></li>
 <li class="chapter" data-level="0.2.3" data-path="ch0.html"><a href="ch0.html#python"><i class="fa fa-check"></i><b>0.2.3</b> Python</a></li>
 </ul></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="ch1.html"><a href="ch1.html"><i class="fa fa-check"></i><b>1</b> 车险索赔频率预测</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="ch1.html"><a href="ch1.html#背景介绍"><i class="fa fa-check"></i><b>1.1</b> 背景介绍</a></li>
+<li class="chapter" data-level="1.2" data-path="ch1.html"><a href="ch1.html#预测模型"><i class="fa fa-check"></i><b>1.2</b> 预测模型</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/sxpyggy/Modern-Actuarial-Models/tree/modern-actuarial-models" target="blank">GitHub repo</a></li>
@@ -125,7 +133,7 @@
 <li><p><a href="https://developer.nvidia.com/cuda-toolkit-archivE">CUDA</a></p></li>
 <li><p><a href="https://developer.nvidia.com/rdp/form/cudnn-download-survey">cuDNN</a></p></li>
 </ul>
-<div id="克隆代码" class="section level2">
+<div id="克隆代码" class="section level2" number="0.1">
 <h2><span class="header-section-number">0.1</span> 克隆代码</h2>
 <p><a href="https://github.com/">GitHub</a>提供了大量开源代码，这门课的代码主要来自<a href="https://github.com/JSchelldorfer/ActuarialDataScience">此链接</a>。通常，使用GitHub开源代码最方便的是<code>fork</code>到自己GitHub账户下，然后<code>clone</code>到本地。具体而言，需要进行以下操作：</p>
 <ol style="list-style-type: decimal">
@@ -142,13 +150,13 @@
 </ol>
 <p>理论上，GitHub上所有仓库都可以采用以上方法在RStudio中管理，当然，RStudio对于R代码仓库管理最有效，因为我们可以直接在RStudio中运行仓库中的代码。</p>
 </div>
-<div id="建立环境" class="section level2">
+<div id="建立环境" class="section level2" number="0.2">
 <h2><span class="header-section-number">0.2</span> 建立环境</h2>
 <p>在以下步骤中，当你发现安装非常慢时，可以尝试4G网络，尝试VPN，尝试改变CRAN的镜像源，或尝试改变conda的镜像源。conda镜像源通过修改用户目录下的<code>.condarc</code>文件使用<a href="https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/">TUNA镜像源</a>，但该镜像源可能有更新延迟。</p>
-<div id="r-interface-to-keras" class="section level3">
+<div id="r-interface-to-keras" class="section level3" number="0.2.1">
 <h3><span class="header-section-number">0.2.1</span> R interface to Keras</h3>
 <p>这里主要说明<code>keras</code>包的安装和使用。<a href="https://keras.rstudio.com/">Keras</a>是tensorflow的API，在keras中建立的神经网络模型都由tensorflow训练。安装<code>keras</code>包主要是安装Python库tensorflow，并让R与之相关联。</p>
-<div id="r自动安装" class="section level4">
+<div id="r自动安装" class="section level4" number="0.2.1.1">
 <h4><span class="header-section-number">0.2.1.1</span> R自动安装</h4>
 <p>最简单的安装方式如下：</p>
 <ol style="list-style-type: decimal">
@@ -178,7 +186,7 @@ You can install TensorFlow using the install_tensorflow() function.</code></pre>
 <p>更好的方式是在conda下安装好指定版本的<code>tensorflow</code>然后关联到R，或者用其他方式让R找到其他方式安装的<code>tensorflow</code>。这时，你先把之前失败的安装<code>C:\Users\...\AppData\Local\r-miniconda</code>，这个文件夹完全删掉。然后参考以下安装步骤。</p></li>
 </ol>
 </div>
-<div id="使用reticulate关联conda环境" class="section level4">
+<div id="使用reticulate关联conda环境" class="section level4" number="0.2.1.2">
 <h4><span class="header-section-number">0.2.1.2</span> 使用reticulate关联conda环境</h4>
 <ol style="list-style-type: decimal">
 <li><p>下载并安装<a href="https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/">Anaconda</a>或者<a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda</a>。</p></li>
@@ -195,7 +203,7 @@ layer_dense(10, activation = &quot;softmax&quot;)
 summary(model)</code></pre></li>
 </ol>
 </div>
-<div id="指定conda安装" class="section level4">
+<div id="指定conda安装" class="section level4" number="0.2.1.3">
 <h4><span class="header-section-number">0.2.1.3</span> 指定conda安装</h4>
 <ol style="list-style-type: decimal">
 <li><p>下载并安装<a href="https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/">Anaconda</a>或者<a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda</a>。</p></li>
@@ -213,7 +221,7 @@ layer_dense(10, activation = &quot;softmax&quot;)
 summary(model)</code></pre></li>
 </ol>
 </div>
-<div id="使用reticulate安装" class="section level4">
+<div id="使用reticulate安装" class="section level4" number="0.2.1.4">
 <h4><span class="header-section-number">0.2.1.4</span> 使用reticulate安装</h4>
 <ol style="list-style-type: decimal">
 <li><p>重启R，<code>library("reticulate")</code>。</p></li>
@@ -231,10 +239,10 @@ summary(model)</code></pre></li>
 </ol>
 </div>
 </div>
-<div id="r-interface-to-python" class="section level3">
+<div id="r-interface-to-python" class="section level3" number="0.2.2">
 <h3><span class="header-section-number">0.2.2</span> R interface to Python</h3>
 <p>R包<code>reticulate</code>为<code>tensorflow</code>的依赖包，当你装<code>tensorflow</code>它也被自动安装。它可以建立R与Python的交互。</p>
-<div id="reticulate-常见命令" class="section level4">
+<div id="reticulate-常见命令" class="section level4" number="0.2.2.1">
 <h4><span class="header-section-number">0.2.2.1</span> reticulate 常见命令</h4>
 <ul>
 <li><p><code>conda_list()</code>列出已安装的conda环境</p></li>
@@ -244,7 +252,7 @@ summary(model)</code></pre></li>
 </ul>
 <p>很多时候，R会创建一个独立conda环境<code>r-miniconda/envs/r-reticulate</code>。</p>
 </div>
-<div id="切换r关联的conda环境" class="section level4">
+<div id="切换r关联的conda环境" class="section level4" number="0.2.2.2">
 <h4><span class="header-section-number">0.2.2.2</span> 切换R关联的conda环境</h4>
 <p>根据需要，你可以切换R关联的conda环境。具体步骤为</p>
 <ol style="list-style-type: decimal">
@@ -256,10 +264,10 @@ summary(model)</code></pre></li>
 </ol>
 </div>
 </div>
-<div id="python" class="section level3">
+<div id="python" class="section level3" number="0.2.3">
 <h3><span class="header-section-number">0.2.3</span> Python</h3>
 <p>一般在每个Python（Conda）环境都需要安装一个Jupyter Notebook (conda install notebook)。</p>
-<div id="conda环境" class="section level4">
+<div id="conda环境" class="section level4" number="0.2.3.1">
 <h4><span class="header-section-number">0.2.3.1</span> Conda环境</h4>
 <p>Python（conda）环境建立比较简单，在<code>使用reticulate关联conda环境</code>我们已经建立过一个环境<code>r-tensorflow</code>。具体操作如下:</p>
 <ol style="list-style-type: decimal">
@@ -270,7 +278,7 @@ summary(model)</code></pre></li>
 <li><p>如遇到缺少的包，在该环境<code>env-name</code>下使用<code>conda install ***</code>安装缺少的包。</p></li>
 </ol>
 </div>
-<div id="常用的conda命令" class="section level4">
+<div id="常用的conda命令" class="section level4" number="0.2.3.2">
 <h4><span class="header-section-number">0.2.3.2</span> 常用的Conda命令</h4>
 <ul>
 <li><p><code>conda create -n env-name2 --clone env-name1</code>:复制环境</p></li>
@@ -287,7 +295,7 @@ summary(model)</code></pre></li>
 <li><p><code>conda list --export &gt; spec-list.txt</code>, <code>conda create --name env-name2 --file spec-list.txt</code> 保存当前环境所有包（类似<code>conda env export</code>），从文件安装所有包（需同系统）</p></li>
 </ul>
 </div>
-<div id="tensorflowpytorch-gpu-version" class="section level4">
+<div id="tensorflowpytorch-gpu-version" class="section level4" number="0.2.3.3">
 <h4><span class="header-section-number">0.2.3.3</span> Tensorflow/Pytorch GPU version</h4>
 <p><code>Tensorflow</code>可以综合使用CPU和GPU进行计算，GPU的硬件结构适进行卷积运算，所以适于CNN，RNN等模型的求解。</p>
 <p>你可以申请使用<a href="https://cc.ruc.edu.cn/home">校级计算云</a>或者使用学院计算云，它们的服务器都配置了GPU，并装好了可以使用GPU的Tensorflow或者Pytorch。使用<a href="https://cc.ruc.edu.cn/home">校级计算云</a>时，你通常只需要运行Jupyter Notebook就可以使用云端GPU进行计算。使用学院计算云时，你通常需要知道一些常用的<a href="https://www.linuxcool.com/">Linux命令</a>，你也可以安装<a href="https://ubuntu.com/">Ubuntu</a>来熟悉Linux系统。</p>
@@ -310,8 +318,8 @@ summary(model)</code></pre></li>
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="ch1.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -361,6 +369,20 @@ gitbook.start({
 });
 </script>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 </body>
 
 </html>

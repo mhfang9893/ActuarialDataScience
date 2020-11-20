@@ -8,8 +8,10 @@
 ##########################################
 #########  load packages and data
 ##########################################
- 
-source("./1 - French Motor Third-Party Liability Claims/Tools/FreMTPL_1b load data.R")
+
+sub_wkd<-"1 - French Motor Third-Party Liability Claims" # modi
+
+source(paste(sub_wkd, "/Tools/FreMTPL_1b load data.R",sep="")) # modi
 
 # learning data
 (l2 <- ddply(learn.GLM, .(ClaimNb), summarise, n=sum(n), exp=sum(Exposure)))
@@ -44,7 +46,7 @@ length(d.glm1$coefficients)
 
 learn.GLM$fit <- fitted(d.glm1)
 test.GLM$fit <- predict(d.glm1, newdata=test.GLM, type="response")
-c(Poisson.Deviance(learn.GLM$fit, learn.GLM$ClaimNb),Poisson.Deviance(test.GLM$fit, test.GLM$ClaimNb))
+result1<-c(Poisson.Deviance(learn.GLM$fit, learn.GLM$ClaimNb),Poisson.Deviance(test.GLM$fit, test.GLM$ClaimNb))
 
 
 ### Model GLM2
@@ -60,7 +62,7 @@ length(d.glm2$coefficients)
 
 learn.GLM$fit <- fitted(d.glm2)
 test.GLM$fit <- predict(d.glm2, newdata=test.GLM, type="response")
-c(Poisson.Deviance(learn.GLM$fit, learn.GLM$ClaimNb),Poisson.Deviance(test.GLM$fit, test.GLM$ClaimNb))
+result2<-c(Poisson.Deviance(learn.GLM$fit, learn.GLM$ClaimNb),Poisson.Deviance(test.GLM$fit, test.GLM$ClaimNb))
 
 
 ### Model GLM3
@@ -76,6 +78,13 @@ length(d.glm3$coefficients)
 
 learn.GLM$fit <- fitted(d.glm3)
 test.GLM$fit <- predict(d.glm3, newdata=test.GLM, type="response")
-c(Poisson.Deviance(learn.GLM$fit, learn.GLM$ClaimNb),Poisson.Deviance(test.GLM$fit, test.GLM$ClaimNb))
+result3<-c(Poisson.Deviance(learn.GLM$fit, learn.GLM$ClaimNb),Poisson.Deviance(test.GLM$fit, test.GLM$ClaimNb))
 
 
+homo.model<-glm(ClaimNb ~ 1, 
+                data=learn.GLM, offset=log(Exposure), family=poisson())
+learn.GLM$fit <- fitted(homo.model)
+test.GLM$fit <- predict(homo.model, newdata=test.GLM, type="response")
+result0<-c(Poisson.Deviance(learn.GLM$fit, learn.GLM$ClaimNb),Poisson.Deviance(test.GLM$fit, test.GLM$ClaimNb))
+
+rbind(result0,result1,result2,result3)

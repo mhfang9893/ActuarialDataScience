@@ -21,6 +21,11 @@ library(xtable)
 library(Hmisc)
 library(rpart.plot)
 
+rm(list=ls())
+
+sub_wkd<-"1 - French Motor Third-Party Liability Claims" # modi
+
+regions<-fread(paste(sub_wkd,"/Tools/regions.csv",sep="")) # modi
 
 data(freMTPL2freq)
 dat <- freMTPL2freq
@@ -49,9 +54,9 @@ dat2$DrivAgeGLM <- as.factor(DrivAgeGLM[dat2$DrivAge-17,2])
 dat2[,"DrivAgeGLM"] <-relevel(dat2[,"DrivAgeGLM"], ref="5")
 dat2$BonusMalusGLM <- as.integer(pmin(dat2$BonusMalus, 150))
 dat2$DensityGLM <- as.numeric(log(dat2$Density))
-dat2[,"Region"] <-relevel(dat2[,"Region"], ref="R24")
+dat2[,"Region"] <-relevel(dat2[,"Region"], ref="Centre") # modi
 
-set.seed(100)
+set.seed(10)
 ll <- sample(c(1:nrow(dat2)), round(0.9*nrow(dat2)), replace = FALSE)
 learn.GLM <- dat2[ll,]
 test.GLM <- dat2[-ll,]
