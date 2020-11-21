@@ -50,19 +50,24 @@ knitr::include_graphics("./plots/wechat.png")
 
 ## 🗓️ 课程安排 {-}
 
+```{r,echo=FALSE,out.width="90%",fig.align = 'center'}
+knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
+knitr::include_graphics("./plots/plan.png")
+```
+
 以下安排为初步计划，根据大家的需求和背景，我们可能要花更多的时间在某些重要的方法及其在精算上的应用。
 
-- 第9周：
+- 第10周：
 
   准备工作。
 
-- 第10周: 
+- 第11周: 
   
   1 - French Motor Third-Party Liability Claims 
     
   <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3164764>
 
-- 第11周: 
+- 机动
 
   2 - Inisghts from Inside Neural Networks
     

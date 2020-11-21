@@ -1,7 +1,7 @@
 --- 
 title: "现代精算统计模型"
 author: "Modern Actuarial Models"
-date: "2020-11-20 16:02:02"
+date: "2020-11-21 09:24:44"
 site: bookdown::bookdown_site
 output: bookdown::gitbook
 documentclass: book
@@ -47,19 +47,21 @@ editor_options:
 
 ## 🗓️ 课程安排 {-}
 
+<img src="./plots/plan.png" width="90%"  style="display: block; margin: auto;" />
+
 以下安排为初步计划，根据大家的需求和背景，我们可能要花更多的时间在某些重要的方法及其在精算上的应用。
 
-- 第9周：
+- 第10周：
 
   准备工作。
 
-- 第10周: 
+- 第11周: 
   
   1 - French Motor Third-Party Liability Claims 
     
   <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3164764>
 
-- 第11周: 
+- 机动
 
   2 - Inisghts from Inside Neural Networks
     
