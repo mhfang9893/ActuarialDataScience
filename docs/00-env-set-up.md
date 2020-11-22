@@ -94,7 +94,8 @@
 
     用以下代码验证安装成功
 
-    ```
+    
+    ```r
     model <- keras_model_sequential() %>% 
     layer_flatten(input_shape = c(28, 28)) %>% 
     layer_dense(units = 128, activation = "relu") %>% 
@@ -130,7 +131,8 @@
 
     用以下代码验证安装成功
     
-    ```
+    
+    ```r
     model <- keras_model_sequential() %>% 
     layer_flatten(input_shape = c(28, 28)) %>% 
     layer_dense(units = 128, activation = "relu") %>% 
@@ -157,7 +159,8 @@
 
     用以下代码验证安装成功
     
-    ```
+    
+    ```r
     model <- keras_model_sequential() %>% 
     layer_flatten(input_shape = c(28, 28)) %>% 
     layer_dense(units = 128, activation = "relu") %>% 
@@ -180,7 +183,8 @@
 
     用以下代码验证安装成功
     
-    ```
+    
+    ```r
     model <- keras_model_sequential() %>% 
     layer_flatten(input_shape = c(28, 28)) %>% 
     layer_dense(units = 128, activation = "relu") %>% 
