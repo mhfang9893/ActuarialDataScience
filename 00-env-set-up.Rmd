@@ -147,7 +147,7 @@
 
 3. R中`install_packages("tensorflow")`，然后
 
-    ```
+    ```{r eval=F}
     install_tensorflow(method = "conda", conda = "anapy", envname = "r-tensorflow", version = "2.1.0")
     ```
     

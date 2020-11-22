@@ -29,5 +29,4 @@ step-wiselasso协变量选择
 possion-tree
 random-forest
 boosting-poisson-tree
-neural-network
 summary

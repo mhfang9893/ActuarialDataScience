@@ -177,8 +177,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.7" data-path="ch2.html"><a href="ch2.html#possion-tree"><i class="fa fa-check"></i><b>1.7</b> Possion tree</a></li>
 <li class="chapter" data-level="1.8" data-path="ch2.html"><a href="ch2.html#random-forest"><i class="fa fa-check"></i><b>1.8</b> Random forest</a></li>
 <li class="chapter" data-level="1.9" data-path="ch2.html"><a href="ch2.html#boosting-poisson-tree"><i class="fa fa-check"></i><b>1.9</b> Boosting Poisson tree</a></li>
-<li class="chapter" data-level="1.10" data-path="ch2.html"><a href="ch2.html#neural-network"><i class="fa fa-check"></i><b>1.10</b> Neural network</a></li>
-<li class="chapter" data-level="1.11" data-path="ch2.html"><a href="ch2.html#summary"><i class="fa fa-check"></i><b>1.11</b> Summary</a></li>
+<li class="chapter" data-level="1.10" data-path="ch2.html"><a href="ch2.html#summary"><i class="fa fa-check"></i><b>1.10</b> Summary</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/sxpyggy/Modern-Actuarial-Models/tree/modern-actuarial-models" target="blank">GitHub 仓库</a></li>
@@ -299,7 +298,7 @@ You can install TensorFlow using the install_tensorflow() function.</code></pre>
 <li><p>下载并安装<a href="https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/">Anaconda</a>或者<a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda</a>。</p></li>
 <li><p>命令行输入<code>which -a python</code>，找到Anaconda中Python的路径记为<code>anapy</code>。</p></li>
 <li><p>R中<code>install_packages("tensorflow")</code>，然后</p>
-<pre><code>install_tensorflow(method = &quot;conda&quot;, conda = &quot;anapy&quot;, envname = &quot;r-tensorflow&quot;, version = &quot;2.1.0&quot;)</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="ch0.html#cb5-1"></a><span class="kw">install_tensorflow</span>(<span class="dt">method =</span> <span class="st">&quot;conda&quot;</span>, <span class="dt">conda =</span> <span class="st">&quot;anapy&quot;</span>, <span class="dt">envname =</span> <span class="st">&quot;r-tensorflow&quot;</span>, <span class="dt">version =</span> <span class="st">&quot;2.1.0&quot;</span>)</span></code></pre></div>
 <p>此命令会在conda下创建<code>r-tensorflow</code>的环境并装好tensorflow包。</p></li>
 <li><p><code>install_packages("keras"); library("keras")</code></p>
 <p>用以下代码验证安装成功</p>

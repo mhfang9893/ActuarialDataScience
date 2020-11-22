@@ -1,0 +1,8 @@
+"","model","test_error","test_error_keras"
+"1","Intercept",33.5695,21.7647
+"2","GLM",31.7731,20.8665
+"3","GLM Lasso",31.8132,20.8866
+"4","GAM",31.6651,20.8125
+"5","Decision tree",30.978,20.469
+"6","Random forest",30.9652,20.4626
+"7","Generalized boosted model",30.8972,20.4286
