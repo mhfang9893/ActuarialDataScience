@@ -22,11 +22,9 @@ ch2
 协变量变形
 训练集-验证集-测试集
 泊松偏差损失函数
-glm-gam
-glm
-gam
-step-wiselasso协变量选择
-possion-tree
-random-forest
-boosting-poisson-tree
-summary
+泊松回归模型
+泊松可加模型
+泊松回归树
+随机森林
+泊松提升树
+模型比较

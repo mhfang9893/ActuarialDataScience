@@ -1,7 +1,7 @@
 --- 
 title: "现代精算统计模型"
 author: "Modern Actuarial Models"
-date: "2020-11-23 00:11:45"
+date: "2020-11-23 11:57:25"
 site: bookdown::bookdown_site
 output: bookdown::gitbook
 documentclass: book
@@ -27,7 +27,6 @@ editor_options:
 **👉 随机种子数**(2020/11/20)
 
 输入`RNGversion("3.5.0"); set.seed(100)`，使得你的随机种子数和paper的相同，模型结果相近。
-
 
 **👉 MAC OS, Linux, WIN** (2020/11/16)
 

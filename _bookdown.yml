@@ -5,4 +5,4 @@ language:
     chapter_name: ""
 delete_merged_file: true
 output_dir: "docs"
-rmd_files: ["index.Rmd","00-env-set-up.Rmd","01-french.Rmd"] 
+rmd_files: ["index.Rmd","00-introduction.Rmd","00-env-set-up.Rmd","01-french.Rmd"] 

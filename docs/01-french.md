@@ -1,8 +1,3 @@
----
-output: html_document
-editor_options: 
-  chunk_output_type: console
----
 # 车险索赔频率预测 {#ch2}
 
 ## 背景介绍
@@ -74,23 +69,23 @@ $$\tilde{\mathcal{L}}(\mathbf{N},\mathbf{\hat{N}})=\frac{1}{|\mathbf{N}|}\sum_{i
 
 ```r
 rm(list=ls())
-library(CASdatasets)
-library(keras)
-library(data.table)
-library(glmnet)
-library(plyr)
-library(mgcv)
-library(rpart)
+library(CASdatasets) # data
+# library(keras)  # neural network
+library(data.table) # fread,fwrite
+library(glmnet) # lasso 
+library(plyr) # ddply
+library(mgcv) # gam
+library(rpart) # tree
 # library(rpart.plot)
-library(Hmisc)
-# library(randomForest)
-# library(distRforest) # devtools::install_github('henckr/distRforest')
-library(gbm)
+library(Hmisc) # error bar
+# devtools::install_github('henckr/distRforest')
+# library(distRforest) 
+library(gbm) # boosting
 data(freMTPL2freq)
 #data(freMTPL2sev)
-textwidth<-7.3 #inch
-#fwrite(freMTPL2freq,"data/freMTPL2freq.txt")
-#freMTPL2freq<-fread("data/freMTPL2freq_mac.txt")
+# textwidth<-7.3 #inch
+# fwrite(freMTPL2freq,"data/freMTPL2freq.txt")
+# freMTPL2freq<-fread("data/freMTPL2freq_mac.txt")
 ```
 
 ### 截断
@@ -135,8 +130,7 @@ textwidth<-7.3 #inch
 
 
 ```r
-dat <- freMTPL2freq
-dat1 <- dat
+dat1 <- freMTPL2freq
 
 # claim number
 
@@ -165,7 +159,7 @@ dat1[,"VehAgeFac"] <-relevel(dat1[,"VehAgeFac"], ref="2")
 
 dat1$DrivAge <- pmin(dat1$DrivAge,90)
 DrivAgeFac <- cbind(c(18:100), c(rep(1,21-18), rep(2,26-21), rep(3,31-26), 
-                                 rep(4,41-31), rep(5,51-41), rep(6,71-51), rep(7,101-71)))
+                  rep(4,41-31), rep(5,51-41), rep(6,71-51), rep(7,101-71)))
 dat1$DrivAgeFac <- as.factor(DrivAgeFac[dat1$DrivAge-17,2])
 aggregate(dat1$Exposure,by=list(dat1$DrivAgeFac),sum)
 dat1[,"DrivAgeFac"] <-relevel(dat1[,"DrivAgeFac"], ref="6")
@@ -174,7 +168,7 @@ dat1$DrivAge2<-dat1$DrivAge^2
 dat1$DrivAge3<-dat1$DrivAge^3
 dat1$DrivAge4<-dat1$DrivAge^4
 
-# bms
+# bm
 
 dat1$BonusMalus <- as.integer(pmin(dat1$BonusMalus, 150))
 
@@ -200,18 +194,21 @@ dat1$DensityLn <- as.numeric(log(dat1$Density))
 
 # region
 
-aggregate(dat1$Exposure,by=list(dat1$Region),sum)[order(aggregate(dat1$Exposure,by=list(dat1$Region),sum)$x),]
+aggregate(dat1$Exposure,by=list(dat1$Region),sum)[order(
+  aggregate(dat1$Exposure,by=list(dat1$Region),sum)$x),]
 dat1[,"Region"] <-relevel(dat1[,"Region"], ref="Centre")
 str(dat1)
 
 # model matrix for GLM
 
-design_matrix<-model.matrix( ~ ClaimNb + Exposure + VehPowerFac + VehAgeFac + 
-                               DrivAge + DrivAgeLn + DrivAge2 + DrivAge3 + DrivAge4 + 
-                               BonusMalus + VehBrand + VehGas + Area + DensityLn + Region, data=dat1)[,-1] 
+design_matrix<-
+  model.matrix( ~ ClaimNb + Exposure + VehPowerFac + VehAgeFac + 
+                  DrivAge + DrivAgeLn + DrivAge2 + DrivAge3 + DrivAge4 + 
+                  BonusMalus + VehBrand + VehGas + Area + DensityLn + Region, data=dat1)[,-1] 
 # VehPower, VehAge as factor variables
-# design_matrix2<-model.matrix( ~ ClaimNb + Exposure + VehPower + VehAge + DrivAge + 
-#                                 BonusMalus + VehBrand + VehGas + Area + DensityLn + Region, data=dat1)[,-1] 
+# design_matrix2<-
+# model.matrix( ~ ClaimNb + Exposure + VehPower + VehAge + DrivAge + 
+#                BonusMalus + VehBrand + VehGas + Area + DensityLn + Region, data=dat1)[,-1] 
 # VehPower, VehAge, and DrivAge as continuous variables
 # dim(design_matrix2)
 ```
@@ -222,7 +219,7 @@ design_matrix<-model.matrix( ~ ClaimNb + Exposure + VehPowerFac + VehAgeFac +
 
 - 根据索赔次数分层抽样
 
-- 经验索赔频率约为$10%$
+- 经验索赔频率约为$10\%$
 
 
 ```r
@@ -232,8 +229,10 @@ seed_split<-11
 
 index_zero<-which(dat1$ClaimNb==0)
 index_one<-which(dat1$ClaimNb>0)
-prop_zero<-round(length(index_zero)/(length(index_one)+length(index_zero)),2);prop_zero
-prop_one<-round(length(index_one)/(length(index_one)+length(index_zero)),2);prop_one
+prop_zero<-round(length(index_zero)/(length(index_one)+length(index_zero)),2)
+prop_zero
+prop_one<-round(length(index_one)/(length(index_one)+length(index_zero)),2)
+prop_one
 
 # 0.6:0.2:0.2
 
@@ -255,7 +254,7 @@ index_test<-setdiff(union(index_zero,index_one),union(index_train,index_valid))
 index_learn<-union(index_train,index_valid)
 length(index_train);length(index_valid);length(index_test)
 
-# train-validation-test; learn-test的
+# train-validation-test; learn-test
 
 dat1_train<-dat1[index_train,]
 dat1_valid<-dat1[index_valid,]
@@ -274,7 +273,6 @@ matrix_test<-design_matrix[index_test,]
 matrix_learn<-design_matrix[index_learn,]
 
 # gbm matrix (learn)
-
 
 dat1_learn_gbm<-dat1_learn[,c("ClaimNb", "Exposure",
                               "VehPower", "VehAge", "DrivAge", "BonusMalus",
@@ -305,30 +303,22 @@ keras_poisson_dev<-function(y_hat,y_true)
   {100*sum(y_hat-y_true*log(y_hat))/length(y_true)}
 f_keras<-function(x) 100*(x-x*log(x))
 f_keras(0.1);f_keras(0.2)
-# png("./plots/poi_dev.png")
+# png("./plots/1/poi_dev.png")
 plot(seq(0.05,0.15,0.01),f_keras(seq(0.05,0.15,0.01)),type="l",
-      xlab="frequency",ylab="approximated Poisson deviance")
+      xlab="frequency",ylab="approximated Poisson deviance",main="100(freq - freq * ln freq)")
  abline(v=0.1,lty=2);abline(h=f_keras((0.1)),lty=2)
 # dev.off()
 ```
 
+<img src="./plots/1/poi_dev.png" width="50%" style="display: block; margin: auto;" />
 
-```r
-knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
-knitr::include_graphics("./plots/poi_dev.png")
-```
-
-<img src="./plots/poi_dev.png" width="50%" style="display: block; margin: auto;" />
-
-##  GLM & GAM
+##  泊松回归模型
 
 - 使用极大似然方法在映射空间中找到最优的回归方程
 
 - 在极大似然中使用的数据集称为学习集（learning data set）。
 
 - 为了防止过拟合，我们需要进行协变量选择，可以删掉不显著的协变量，也可以使用逐步回归、最优子集、LASSO等，判断标准为AIC等。
-
-### GLM
 
 - 同质模型 $$\mathbf{E}(N)=\beta_0$$
 
@@ -341,9 +331,11 @@ knitr::include_graphics("./plots/poi_dev.png")
 ```r
 # homogeneous model
 
-d.glm0 <- glm(ClaimNb ~ 1 + offset(log (Exposure)), data=data.frame(matrix_learn), family=poisson())
+d.glm0 <- glm(ClaimNb ~ 1 + offset(log (Exposure)), 
+              data=data.frame(matrix_learn), family=poisson())
 #summary(d.glm0)
-dat1_test$fitGLM0 <- predict(d.glm0, newdata=data.frame(matrix_test), type="response")
+dat1_test$fitGLM0 <- 
+  predict(d.glm0, newdata=data.frame(matrix_test), type="response")
 keras_poisson_dev(dat1_test$fitGLM0,matrix_test[,1])
 Poisson.Deviance(dat1_test$fitGLM0,matrix_test[,1])
 
@@ -351,53 +343,31 @@ Poisson.Deviance(dat1_test$fitGLM0,matrix_test[,1])
 
 names(data.frame(matrix_learn))
 {t1 <- proc.time()
-d.glm1 <- glm(ClaimNb ~ .-Exposure + offset(log(Exposure)), data=data.frame(matrix_learn), family=poisson())
+d.glm1 <- glm(ClaimNb ~ .-Exposure + offset(log(Exposure)), 
+              data=data.frame(matrix_learn), family=poisson())
 (proc.time()-t1)}
 # summary(d.glm1)
-dat1_train$fitGLM1 <- predict(d.glm1, newdata=data.frame(matrix_train), type="response")
-dat1_valid$fitGLM1 <- predict(d.glm1, newdata=data.frame(matrix_valid), type="response")
-dat1_test$fitGLM1 <- predict(d.glm1, newdata=data.frame(matrix_test), type="response")
-dat1_learn$fitGLM1 <- predict(d.glm1, newdata=data.frame(matrix_learn), type="response")
+dat1_train$fitGLM1 <- 
+  predict(d.glm1, newdata=data.frame(matrix_train), type="response")
+dat1_valid$fitGLM1 <- 
+  predict(d.glm1, newdata=data.frame(matrix_valid), type="response")
+dat1_test$fitGLM1 <- 
+  predict(d.glm1, newdata=data.frame(matrix_test), type="response")
+dat1_learn$fitGLM1 <- 
+  predict(d.glm1, newdata=data.frame(matrix_learn), type="response")
 keras_poisson_dev(dat1_test$fitGLM1,matrix_test[,1])
 Poisson.Deviance(dat1_test$fitGLM1,matrix_test[,1])
 ```
 
-### GAM
-
-- GAM边缘提升模型
-
-$$\ln \mathbf{E}(N)=\ln\hat{\lambda}_{\text{GLM}}+s_1(\text{VehAge})+s_2(\text{BM})$$
-
-- $s_1,s_2$为样条平滑函数。
-
-- 使用`ddply`聚合数据，找到充分统计量，加快模型拟合速度。
-
-
-```r
-#  GAM marginals improvement (VehAge and BonusMalus)
-
-{t1 <- proc.time()
-dat.GAM <- ddply(dat1_learn, .(VehAge, BonusMalus), summarise, 
-                 fitGLM1=sum(fitGLM1), ClaimNb=sum(ClaimNb))
-set.seed(1)
-d.gam <- gam(ClaimNb ~ s(VehAge, bs="cr")+s(BonusMalus, bs="cr") + 
-               offset(log(fitGLM1)), data=dat.GAM, method="GCV.Cp", family=poisson)
-(proc.time()-t1)}
-summary(d.gam)
-dat1_train$fitGAM1 <- predict(d.gam, newdata=dat1_train,type="response")
-dat1_valid$fitGAM1 <- predict(d.gam, newdata=dat1_valid,type="response")
-dat1_test$fitGAM1 <- predict(d.gam, newdata=dat1_test,type="response")
-keras_poisson_dev(dat1_test$fitGAM1, dat1_test$ClaimNb)
-Poisson.Deviance(dat1_test$fitGAM1,matrix_test[,1])
-```
-
-### Step wise、LASSO协变量选择
+**Step wise、LASSO协变量选择**
 
 - 逐步回归非常慢，在Linux 8核i7 3.4GHz 16G内存都需要50多分钟。且样本外损失和全模型没有明显减小。
 
 - 5折CV Lasso在Linux 8核i7 3.4GHz 16G内存需要5分钟。
 
-- 根据5折CV-error选取正则参数`beta=4*10^-5`，但样本外损失和全模型没有明显减小。
+- 根据5折CV-error选取Lasso正则参数`beta=4*10^-5`。
+
+- 两种方法的样本外损失和全模型没有明显减小，说明没有发生明显过拟合。也说明需要从非线性效应和交互项出发提升模型。
 
 
 ```r
@@ -449,11 +419,54 @@ keras_poisson_dev(dat1_test$fitLasso, matrix_test[,1])
 Poisson.Deviance(dat1_test$fitLasso, matrix_test[,1])
 ```
 
-## Possion tree
 
-- 使用 recursive partitioning by binary splits 算法对风险空间进行划分，使得各子空间内的应变量差异最小
+## 泊松可加模型
 
-- 为了防止过拟合，使用交叉验证确定cost-complexity parameter `cp=10^-3.32`(1-SD rule)或者`cp=10^-4`(min CV rule)，进而对树的深度进行控制。
+- GAM边缘提升模型
+
+- 样本外损失减少，说明非线性效应存在。
+
+$$\ln \mathbf{E}(N)=\ln\hat{\lambda}_{\text{GLM}}+s_1(\text{VehAge})+s_2(\text{BM})$$
+
+- $s_1,s_2$为样条平滑函数。
+
+- 使用`ddply`聚合数据，找到充分统计量，加快模型拟合速度。
+
+
+```r
+#  GAM marginals improvement (VehAge and BonusMalus)
+
+{t1 <- proc.time()
+dat.GAM <- ddply(dat1_learn, .(VehAge, BonusMalus), summarise, 
+                 fitGLM1=sum(fitGLM1), ClaimNb=sum(ClaimNb))
+set.seed(1)
+d.gam <- gam(ClaimNb ~ s(VehAge, bs="cr")+s(BonusMalus, bs="cr") + 
+               offset(log(fitGLM1)), data=dat.GAM, method="GCV.Cp", family=poisson)
+(proc.time()-t1)}
+summary(d.gam)
+dat1_train$fitGAM1 <- predict(d.gam, newdata=dat1_train,type="response")
+dat1_valid$fitGAM1 <- predict(d.gam, newdata=dat1_valid,type="response")
+dat1_test$fitGAM1 <- predict(d.gam, newdata=dat1_test,type="response")
+keras_poisson_dev(dat1_test$fitGAM1, dat1_test$ClaimNb)
+Poisson.Deviance(dat1_test$fitGAM1,matrix_test[,1])
+```
+
+## 泊松回归树
+
+- 使用 recursive partitioning by binary splits 算法对风险空间进行划分，使得各子空间内的应变量差异最小。
+
+- 为了防止过拟合，使用交叉验证确定cost-complexity parameter。
+
+- `cp=10^-3.421`(1-SD rule)剪枝成`split=22`的树，或者`cp=10^-3.949`(min CV rule)剪枝成`split=55`的树。
+
+- `split=55`(min CV rule)树的样本外损失较小。
+
+- Variable importance (min CV rule)
+
+  ```
+BonusMalus     VehAge   VehBrand    DrivAge     VehGas   VehPower     Region  DensityLn 
+ 4675.0231  4396.8667  1389.2909   877.9473   795.6308   715.3584   480.3459   140.5463
+  ```
 
 
 ```r
@@ -464,11 +477,10 @@ set.seed(1)
 {t1 <- proc.time()
 tree0<-rpart(cbind(Exposure, ClaimNb) ~ VehPower + VehAge + DrivAge + 
                BonusMalus + VehBrand + VehGas + Area + DensityLn + Region, 
-             data = dat1_learn, method = "poisson", seed =1,
+             data = dat1_learn, method = "poisson", 
              control = rpart.control (xval=5, minbucket=1000, cp=10^-5,
                                       maxcompete = 0, maxsurrogate = 0))
 (proc.time()-t1)}
-# printcp(tree0)
 x0 <- log10(tree0$cptable[,1])
 err0<-tree0$cptable[,4]
 std0<-tree0$cptable[,5]
@@ -476,52 +488,45 @@ xmain <- "cross-validation error plot"
 xlabel <- "cost-complexity parameter (log-scale)"
 ylabel <- "relative CV error"
 
-# png("./plots/tree_cv.png")
+(cp_min<-x0[which.min(err0)])
+(cp_1sd<-x0[min(which(err0<min(err0)+std0[which.min(err0)]))])
+(nsplit_min<-tree0$cptable[which.min(err0),2])
+(nsplit_1sd<-tree0$cptable[min(which(err0<min(err0)+std0[which.min(err0)])),2])
+
+# png("./plots/1/tree_cv.png")
 errbar(x=x0, y=err0*100, yplus=(err0+std0)*100, yminus=(err0-std0)*100,
       xlim=rev(range(x0)), col="blue", main=xmain, ylab=ylabel, xlab=xlabel)
 lines(x=x0, y=err0*100, col="blue")
 abline(h=c(min(err0+std0)*100), lty=1, col="orange")
 abline(h=c(min(err0)*100), lty=1, col="magenta")
-abline(v=-3.32,lty=2)
-legend(x="topright", col=c("blue", "orange", "magenta","black"),
-      lty=c(1,1,1,2), lwd=c(1,1,1,1), pch=c(19,-1,-1,-1),
-      legend=c("tree0", "1-SD rule", "min.CV rule","log cp = -3.32"))
+abline(v=c(cp_1sd,cp_min),lty=2,col=c("orange","magenta"))
+legend(x="topright", col=c("blue", "orange", "magenta","orange","magenta"),
+      lty=c(1,1,1,2,2), lwd=c(1,1,1,1,1), pch=c(19,-1,-1,-1,-1),
+      c("tree0", "1-SD rule", "min.CV rule",
+        paste("log cp = ",round(cp_1sd,3)),paste("log cp = ", round(cp_min,3))))
 # dev.off()
-tree1 <- prune(tree0, cp=10^-3.32) # cp=10^-3.32
-tree11<- prune(tree0, cp=tree0$cptable[which.min(err0),1]) # cp=10^-4
-# printcp(tree1)
-# printcp(tree11)
-# tree1
-dat1_test$fitRT_1se <- predict(tree1, newdata=dat1_test)*dat1_test$Exposure
-dat1_test$fitRT_min <- predict(tree11, newdata=dat1_test)*dat1_test$Exposure
-keras_poisson_dev(dat1_test$fitRT_1se, dat1_test$ClaimNb)
+tree1 <- prune(tree0, cp=10^mean(cp_min,min(x0[x0>cp_min]))) 
+tree11<- prune(tree0, cp=10^mean(cp_1sd,min(x0[x0>cp_1sd]))) 
+tree1$cptable[nrow(tree1$cptable),2];nsplit_min
+tree11$cptable[nrow(tree11$cptable),2];nsplit_1sd
+
+dat1_test$fitRT_min <- predict(tree1, newdata=dat1_test)*dat1_test$Exposure
+dat1_test$fitRT_sd <- predict(tree11, newdata=dat1_test)*dat1_test$Exposure
 keras_poisson_dev(dat1_test$fitRT_min, dat1_test$ClaimNb)
-Poisson.Deviance(dat1_test$fitRT_1se, dat1_test$ClaimNb)
+keras_poisson_dev(dat1_test$fitRT_sd, dat1_test$ClaimNb)
 Poisson.Deviance(dat1_test$fitRT_min, dat1_test$ClaimNb)
+Poisson.Deviance(dat1_test$fitRT_sd, dat1_test$ClaimNb)
 
 tree1$variable.importance
 tree11$variable.importance
 ```
 
-
-```r
-knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
-knitr::include_graphics("./plots/tree_cv.png")
-```
-
-<img src="./plots/tree_cv.png" width="60%"  style="display: block; margin: auto;" />
+<img src="./plots/1/tree_cv.png" width="60%"  style="display: block; margin: auto;" />
 
 - 交叉验证可使用`rpart(..., control=rpart.control(xval= ,...))`或者`xpred.rpart(tree, group)`。
 
-- 以上两种方式得到相同的剪枝树，`cp=10^-4`（min CV rule）
+- 以上两种方式得到很相近的`min CV rule`剪枝树55 vs 51，但`1-SD rule`相差较多22 vs 12。
 
-- Variable importance (min CV rule)
-
-  ```
-BonusMalus     VehAge   VehBrand    DrivAge     VehGas   VehPower     Region  DensityLn 
- 4675.0231  4396.8667  1389.2909   877.9473   795.6308   715.3584   480.3459   140.5463
-  ```
-    
 
 ```r
 # K-fold cross-validation using xpred.rpart
@@ -530,8 +535,8 @@ set.seed(1)
 {t1 <- proc.time()
 tree00<-rpart(cbind(Exposure, ClaimNb) ~ VehPower + VehAge + DrivAge + 
                 BonusMalus + VehBrand + VehGas + Area + DensityLn + Region, 
-              data = dat1_learn, method = "poisson", seed = 1,
-              control = rpart.control (xval=1, minbucket=1000 ,cp=5*10^-5,
+              data = dat1_learn, method = "poisson", 
+              control = rpart.control (xval=1, minbucket=1000 ,cp=10^-5,
                                        maxcompete = 0, maxsurrogate = 0))
 (proc.time()-t1)}
 
@@ -539,10 +544,10 @@ tree00<-rpart(cbind(Exposure, ClaimNb) ~ VehPower + VehAge + DrivAge +
 std1<- numeric(n_subtrees)
 err1 <- numeric(n_subtrees)
 
-K <- 10                  
+K <- 5                  
 xgroup <- rep(1:K, length = nrow(dat1_learn))
 xfit <- xpred.rpart(tree00, xgroup)
-dim(xfit)
+dim(xfit);dim(dat1_learn)
 for (i in 1:n_subtrees){
  err_group<-rep(NA,K)
  for (k in 1:K){
@@ -553,7 +558,13 @@ for (i in 1:n_subtrees){
   err1[i] <- mean(err_group)             
   std1[i] <- sd(err_group)
 }
+
 x1 <- log10(tree00$cptable[,1])
+(cp_min1<-x1[which.min(err1)])
+(cp_1sd1<-x1[min(which(err1<min(err1)+std1[which.min(err1)]))])
+(nsplit_min1<-tree00$cptable[which.min(err1),2])
+(nsplit_1sd1<-tree00$cptable[min(which(err1<min(err1)+std1[which.min(err1)])),2])
+
 xmain <- "cross-validation error plot"
 xlabel <- "cost-complexity parameter (log-scale)"
 ylabel <- "CV error (in 10^(-2))"
@@ -562,12 +573,14 @@ errbar(x=x1, y=err1*100, yplus=(err1+std1)*100, yminus=(err1-std1)*100,
 lines(x=x1, y=err1*100, col="blue")
 abline(h=c(min(err1+std1)*100), lty=1, col="orange")
 abline(h=c(min(err1)*100), lty=1, col="magenta")
-abline(v=-3.12,lty=2)
-legend(x="topright", col=c("blue", "orange", "magenta","black"), 
-       lty=c(1,1,1,2), lwd=c(1,1,1,1), pch=c(19,-1,-1,-1), 
-       legend=c("tree1", "1-SD rule", "min.CV rule","log cp = -3.12"))
-tree2 <- prune(tree00, cp=10^-3.12)
-tree22 <- prune(tree00, cp=tree00$cptable[which.min(err1),1])
+abline(v=c(cp_1sd1,cp_min1),lty=2,col=c("orange","magenta"))
+legend(x="topright", col=c("blue", "orange", "magenta","orange","magenta"),
+      lty=c(1,1,1,2,2), lwd=c(1,1,1,1,1), pch=c(19,-1,-1,-1,-1),
+      c("tree0", "1-SD rule", "min.CV rule",
+        paste("log cp = ",round(cp_1sd1,3)),paste("log cp = ", round(cp_min1,3))))
+
+tree2 <- prune(tree00, cp=10^mean(cp_min1,min(x1[x1>cp_min1]))) 
+tree22 <- prune(tree00, cp=10^mean(cp_1sd1,min(x1[x1>cp_1sd1]))) 
 printcp(tree2)
 printcp(tree22)
 dat1_test$fitRT2 <- predict(tree2, newdata=dat1_test)*dat1_test$Exposure
@@ -576,13 +589,15 @@ keras_poisson_dev(dat1_test$fitRT2, dat1_test$ClaimNb)
 keras_poisson_dev(dat1_test$fitRT22, dat1_test$ClaimNb)
 Poisson.Deviance(dat1_test$fitRT2, dat1_test$ClaimNb)
 Poisson.Deviance(dat1_test$fitRT22, dat1_test$ClaimNb)
-sum((dat1_test$fitRT22-dat1_test$fitRT11)^2)
+sum((dat1_test$fitRT2-dat1_test$fitRT_min)^2)
+sum((dat1_test$fitRT22-dat1_test$fitRT_sd)^2)
 tree2$variable.importance
+tree1$variable.importance
 tree22$variable.importance
 tree11$variable.importance
 ```
 
-## Random forest
+## 随机森林
 
 - 使用<https://github.com/henckr/distRforest>建立泊松随机森林。
 
@@ -595,15 +610,15 @@ tree11$variable.importance
 # fit the random forest
 
 library(distRforest)
-ntrees0<-100
+ntrees0<-200
 set.seed(1)
 {t1 <- proc.time()
 forest1<-rforest(cbind(Exposure, ClaimNb) ~  VehPower + VehAge + DrivAge +
                    BonusMalus + VehBrand + VehGas + Area + DensityLn + Region,
-                 data = dat1_train, method = "poisson",
-                 control = rpart.control (xval=0, minbucket=1000 ,cp=5*10^-5,
-                                          maxcompete = 0,maxsurrogate = 0), 
-                 parms=list(shrink=0), ncand=5,ntrees = ntrees0, 
+                 data = dat1_train, method = "poisson", 
+                 control = rpart.control (xval=0, minbucket=1000 ,cp=10^-4,
+                                maxcompete = 0,maxsurrogate = 0, seed=1), 
+                 parms=list(shrink=1), ncand=5,ntrees = ntrees0, 
                  subsample = 0.5, red_mem = T)
 (proc.time()-t1)}
 
@@ -617,7 +632,7 @@ for (i in 1:ntrees0){
   fit_valid_norm <- fit_valid/i
   error_valid[i]<-Poisson.Deviance(fit_valid_norm, dat1_valid$ClaimNb)
 }
-# png("./plots/random_forest_error.png")
+# png("./plots/1/random_forest_error.png")
 plot(error_valid,type="l",xlab="number of trees",ylab="validation error in 10^-2")
 abline(v=which.min(error_valid),lty=2)
 # dev.off()
@@ -636,19 +651,53 @@ names(forest1$trees[[2]]$variable.importance)
 sum(forest1$trees[[3]]$variable.importance)
 ```
 
+<img src="./plots/1/random_forest_error.png" width="60%"  style="display: block; margin: auto;" />
 
-```r
-knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
-knitr::include_graphics("./plots/random_forest_error.png")
-```
-
-<img src="./plots/random_forest_error.png" width="60%"  style="display: block; margin: auto;" />
-
-## Boosting Poisson tree
+## 泊松提升树
 
 - `n.trees` 树的数量；`shrinkage` 学习步长，和树的数量成反比；`interaction.depth` 交互项深度；`bag.fraction` 每棵树使用的数据比例；`train.fraction` 训练集比例；`n.minobsinnode`叶子上最少样本量。
 
-- 
+
+```r
+set.seed(1)
+{t1 <- proc.time()
+  gbm1 <-
+    gbm(
+      ClaimNb ~  VehPower + VehAge + DrivAge + BonusMalus + VehBrand + VehGas +
+        Area + DensityLn + Region + offset(log(Exposure)),
+      data = dat1_learn_gbm,
+      distribution = "poisson",
+      n.trees = 500,
+      shrinkage = 0.1,
+      interaction.depth = 5,
+      bag.fraction = 0.5,
+      train.fraction = train_pro,
+      cv.folds = 0,
+      n.minobsinnode = 1000,
+      verbose = T
+    )
+(proc.time()-t1)}
+
+# plot the performance
+
+# png("./plots/1/gbm_error.png")
+gbm.perf(gbm1,method="test")
+legend("topright",lty=c(1,1,2),col=c("black","red","blue"),
+       c("training error", "validation error", "best iterations"))
+# dev.off()
+
+best.iter<-gbm.perf(gbm1,method="test")
+dat1_test$fitGBM1<-
+  predict(gbm1, dat1_test,n.trees=best.iter,type="response")*dat1_test$Exposure
+keras_poisson_dev(dat1_test$fitGBM1,dat1_test$ClaimNb)
+Poisson.Deviance(dat1_test$fitGBM1,dat1_test$ClaimNb)
+```
+
+
+
+- 根据验证集损失确定迭代次数。
+
+<img src="./plots/1/gbm_error.png" width="60%"  style="display: block; margin: auto;" />
 
 - Variable importance
 
@@ -665,85 +714,28 @@ DensityLn   4.375159
 Area        0.000000
 ```
 
+- 重要变量的边缘效应 
 
-```r
-set.seed(1)
-{t1 <- proc.time()
-  gbm1 <-
-    gbm(
-      ClaimNb ~  VehPower + VehAge + DrivAge + BonusMalus + VehBrand + VehGas +
-        Area + DensityLn + Region + offset(log(Exposure)),
-      data = dat1_learn_gbm,
-      distribution = "poisson",
-      n.trees = 200,
-      shrinkage = 0.3,
-      interaction.depth = 5,
-      bag.fraction = 0.5,
-      train.fraction = train_pro,
-      cv.folds = 0,
-      n.minobsinnode = 1000,
-      verbose = T
-    )
-(proc.time()-t1)}
+<img src="./plots/1/gbm_mar1.png" width="40%"  style="display: block; margin: auto;" /><img src="./plots/1/gbm_mar2.png" width="40%"  style="display: block; margin: auto;" /><img src="./plots/1/gbm_mar3.png" width="40%"  style="display: block; margin: auto;" /><img src="./plots/1/gbm_mar4.png" width="40%"  style="display: block; margin: auto;" />
 
-# plot the performance
+- 重要变量的交互效应 
 
-# png("./plots/gbm_error.png")
-gbm.perf(gbm1,method="test")
-legend("topright",lty=c(1,1,2),col=c("black","red","blue"),c("training error", "validation error", "best iterations"))
-# dev.off()
+<img src="./plots/1/gbm_int1.png" width="40%"  style="display: block; margin: auto;" /><img src="./plots/1/gbm_int2.png" width="40%"  style="display: block; margin: auto;" /><img src="./plots/1/gbm_int3.png" width="40%"  style="display: block; margin: auto;" /><img src="./plots/1/gbm_int4.png" width="40%"  style="display: block; margin: auto;" /><img src="./plots/1/gbm_int5.png" width="40%"  style="display: block; margin: auto;" /><img src="./plots/1/gbm_int6.png" width="40%"  style="display: block; margin: auto;" />
 
-best.iter<-gbm.perf(gbm1,method="test")
-dat1_test$fitGBM1<-predict(gbm1, dat1_test,n.trees=best.iter,type="response")*dat1_test$Exposure
-keras_poisson_dev(dat1_test$fitGBM1,dat1_test$ClaimNb)
-Poisson.Deviance(dat1_test$fitGBM1,dat1_test$ClaimNb)
+## 模型比较 
 
-# plot variable importance
 
-# png("./plots/gbm_imp.png")
-summary(gbm1)
-# dev.off()
-gbm1
 
-# plot the important variable after "best" iterations
 
-# png("./plots/gbm_mar.png")
-par(mfrow=c(2,2))
-plot(gbm1,4,best.iter)
-plot(gbm1,2,best.iter)
-plot(gbm1,5,best.iter)
-plot(gbm1,3,best.iter)
-# dev.off()
-
-par(mfrow=c(2,2))
-plot(gbm1,c(4,2),best.iter,col=terrain.colors(20)) 
-plot(gbm1,c(4,5),best.iter)
-plot(gbm1,c(4,3),best.iter) 
-plot(gbm1,c(2,3),best.iter) 
+```
+##                       model test_error test_error_keras
+## 1                 Intercept    33.5695          21.7647
+## 2                       GLM    31.7731          20.8665
+## 3                 GLM Lasso    31.8132          20.8866
+## 4                       GAM    31.6651          20.8125
+## 5             Decision tree    30.9780          20.4690
+## 6             Random forest    30.9652          20.4626
+## 7 Generalized boosted model    30.8972          20.4286
 ```
 
-## Summary
-
-```r
-dev_sum <- data.frame(model=c("Intercept","GLM","GLM Lasso","GAM","Decision tree", "Random forest","Generalized boosted model"), test_error=rep(NA,7),test_error_keras=rep(NA,7))
-dev_sum$test_error[1]<-Poisson.Deviance(dat1_test$fitGLM0,matrix_test[,1])
-dev_sum$test_error_keras[1]<-keras_poisson_dev(dat1_test$fitGLM0,matrix_test[,1])
-dev_sum$test_error[2]<-Poisson.Deviance(dat1_test$fitGLM1,matrix_test[,1])
-dev_sum$test_error_keras[2]<-keras_poisson_dev(dat1_test$fitGLM1,matrix_test[,1])
-dev_sum$test_error[3]<-Poisson.Deviance(dat1_test$fitLasso,matrix_test[,1])
-dev_sum$test_error_keras[3]<-keras_poisson_dev(dat1_test$fitLasso,matrix_test[,1])
-dev_sum$test_error[4]<-Poisson.Deviance(dat1_test$fitGAM1, dat1_test$ClaimNb)
-dev_sum$test_error_keras[4]<-keras_poisson_dev(dat1_test$fitGAM1, dat1_test$ClaimNb)
-dev_sum$test_error[5]<-Poisson.Deviance(dat1_test$fitRT_min, dat1_test$ClaimNb)
-dev_sum$test_error_keras[5]<-keras_poisson_dev(dat1_test$fitRT_min, dat1_test$ClaimNb)
-dev_sum$test_error[6]<-Poisson.Deviance(dat1_test$fitRF, dat1_test$ClaimNb)
-dev_sum$test_error_keras[6]<-keras_poisson_dev(dat1_test$fitRF, dat1_test$ClaimNb)
-dev_sum$test_error[7]<-Poisson.Deviance(dat1_test$fitGBM1,dat1_test$ClaimNb)
-dev_sum$test_error_keras[7]<-keras_poisson_dev(dat1_test$fitGBM1,dat1_test$ClaimNb)
-dev_sum[,2:3]<-round(dev_sum[,2:3],4)
-write.csv(dev_sum,"./plots/dev_sum.csv")
-dev_sum
-```
-
-
-
+- Boosting > RF > Tree > GAM > GLM > Homo
