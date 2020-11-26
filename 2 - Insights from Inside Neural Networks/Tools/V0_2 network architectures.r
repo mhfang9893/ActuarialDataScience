@@ -36,9 +36,9 @@ glm.formula <- function(nb){
 #########  networks 
 ##########################################
 
-shallow.plain.vanilla <- function(seed, q0, y0){
-    set.seed(seed)
-    use_session_with_seed(seed)  
+shallow.plain.vanilla <- function(q0, y0){
+    #set.seed(seed)
+    #use_session_with_seed(seed)  
     design  <- layer_input(shape = c(q0[1]), dtype = 'float32', name = 'design') 
     #
     output = design %>%

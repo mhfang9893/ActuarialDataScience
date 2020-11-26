@@ -12,9 +12,11 @@
 #########  load packages and data
 ##########################################
  
-source(file="./Tools/V0_1 pre_process data.R")
+sub_wkd<-"2 - Insights from Inside Neural Networks" # modi
+
+source(file=paste(sub_wkd,"/Tools/V0_1 pre_process data.r",sep=""))
 # pro-processing uses dummy coding
-source(file="./Tools/V0_2 network architectures.R")
+source(file=paste(sub_wkd,"/Tools/V0_2 network architectures.r",sep=""))
 str(learn)    
 
    
@@ -41,7 +43,7 @@ q1 <- 20                               # number of neurons
 seed <- 100                            # set seed
 
 # define plain vanilla shallow network
-model <- shallow.plain.vanilla(seed, qqq, log(lambda.0))
+model <- shallow.plain.vanilla( qqq, log(lambda.0))
 model
 
 # install callback
@@ -55,7 +57,7 @@ model %>% compile(loss = 'poisson', optimizer = 'nadam')
 epoch0 <- 100  # replication of Table 2 uses 1000 epochs which takes 440 seconds
 {t1 <- proc.time()
   fit <- model %>% fit(list(learn.XX), learn$ClaimNb, validation_split=0.1,
-                       batch_size=10000, epochs=epoch0, verbose=0, callbacks=CBs)
+                       batch_size=10000, epochs=epoch0, verbose=1, callbacks=CBs)
 (proc.time()-t1)[3]}
 
 # illustrate gradient descent performance
