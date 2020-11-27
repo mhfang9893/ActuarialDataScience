@@ -736,6 +736,7 @@ Area        0.000000
 ## 5             Decision tree    30.9780          20.4690
 ## 6             Random forest    30.9652          20.4626
 ## 7 Generalized boosted model    30.8972          20.4286
+## 8            Neural network    31.0607          20.5080
 ```
 
 - Boosting > RF > Tree > GAM > GLM > Homo
