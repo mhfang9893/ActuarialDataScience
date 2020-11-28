@@ -1,4 +1,6 @@
-# 车险索赔频率预测 {#ch2}
+# 车险索赔频率预测 {#french}
+
+“见多识广、随机应变”
 
 ## 背景介绍
 
@@ -66,7 +68,8 @@ $$\tilde{\mathcal{L}}(\mathbf{N},\mathbf{\hat{N}})=\frac{1}{|\mathbf{N}|}\sum_{i
 
 加载包。
 
-```{r packages, eval =F} 
+
+```r
 rm(list=ls())
 library(CASdatasets) # data
 # library(keras)  # neural network
@@ -86,6 +89,20 @@ data(freMTPL2freq)
 # fwrite(freMTPL2freq,"data/freMTPL2freq.txt")
 # freMTPL2freq<-fread("data/freMTPL2freq_mac.txt")
 ```
+    
+    'data.frame':	678013 obs. of  12 variables:
+     $ IDpol     : num  1 3 5 10 11 13 15 17 18 21 ...
+     $ ClaimNb   : 'table' num [1:678013(1d)] 1 1 1 1 1 1 1 1 1 1 ...
+     $ Exposure  : num  0.1 0.77 0.75 0.09 0.84 0.52 0.45 0.27 0.71 0.15 ...
+     $ VehPower  : int  5 5 6 7 7 6 6 7 7 7 ...
+     $ VehAge    : int  0 0 2 0 0 2 2 0 0 0 ...
+     $ DrivAge   : int  55 55 52 46 46 38 38 33 33 41 ...
+     $ BonusMalus: int  50 50 50 50 50 50 50 68 68 50 ...
+     $ VehBrand  : Factor w/ 11 levels "B1","B10","B11",..: 4 4 4 4 4 4 4 4 4 4 ...
+     $ VehGas    : chr  "Regular" "Regular" "Diesel" "Diesel" ...
+     $ Area      : Factor w/ 6 levels "A","B","C","D",..: 4 4 2 2 2 5 5 3 3 2 ...
+     $ Density   : int  1217 1217 54 76 76 3003 3003 137 137 60 ...
+     $ Region    : Factor w/ 21 levels "Alsace","Aquitaine",..: 21 21 18 2 2 16 16 13 13 17 ...
 
 ### 截断
 
@@ -127,7 +144,8 @@ data(freMTPL2freq)
 
 - `DriveAgeLn/2/3/4, DensityLn`
 
-```{r feature preprocessing, eval=FALSE}
+
+```r
 dat1 <- freMTPL2freq
 
 # claim number
@@ -219,7 +237,8 @@ design_matrix<-
 
 - 经验索赔频率约为$10\%$
 
-```{r data split, eval=F}
+
+```r
 seed_split<-11
 
 # claim 0/1 proportions
@@ -292,7 +311,8 @@ $$\tilde{\mathcal{L}}(\mathbf{N},\mathbf{\hat{N}})=\frac{1}{|\mathbf{N}|}\sum_{i
 
 $$\mathcal{L}(\mathbf{N},\mathbf{\hat{N}})\approx2\tilde{\mathcal{L}}(\mathbf{N},\mathbf{\hat{N}})$$
 
-```{r poisson deviance, eval=F}
+
+```r
 Poisson.Deviance <- function(pred,obs)
   {200*(sum(pred)-sum(obs)+sum(log((obs/pred)^(obs))))/length(pred)}
 keras_poisson_dev<-function(y_hat,y_true)
@@ -306,10 +326,7 @@ plot(seq(0.05,0.15,0.01),f_keras(seq(0.05,0.15,0.01)),type="l",
 # dev.off()
 ```
 
-```{r poi dev figure,echo=F,out.width="50%",fig.align = 'center'}
-knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
-knitr::include_graphics("./plots/1/poi_dev.png")
-```
+<img src="./plots/1/poi_dev.png" width="50%" style="display: block; margin: auto;" />
 
 ##  泊松回归模型
 
@@ -326,8 +343,8 @@ knitr::include_graphics("./plots/1/poi_dev.png")
 
     $$\ln \mathbf{E}(N)=\ln e + \beta_0 + \beta_{\text{VehPowerFac}} + \beta_{\text{VehAgeFac}} \\ + \beta_1\text{DrivAge} + \beta_2\ln\text{DrivAge} + \beta_3\text{DrivAge}^2 + \beta_4\text{DrivAge}^3 + \beta_5\text{DrivAge}^4 \\ \beta_6\text{BM} + \beta_{\text{VehBrand}} + \beta_{\text{VehGas}} + \beta_7\text{Area} + \beta_8\text{DensityLn} + \beta_{\text{Region}}$$
     
-```{r glm, eval=F}
 
+```r
 # homogeneous model
 
 d.glm0 <- glm(ClaimNb ~ 1 + offset(log (Exposure)), 
@@ -368,8 +385,8 @@ Poisson.Deviance(dat1_test$fitGLM1,matrix_test[,1])
 
 - 两种方法的样本外损失和全模型没有明显减小，说明没有发生明显过拟合。也说明需要从非线性效应和交互项出发提升模型。
 
-```{r stepwise lasso,eval=F}
 
+```r
 # step wise selection； this takes a long time (more than 50 minutes!)
 
 # d.glm00 <- glm(ClaimNb ~ VehAgeFac1 + VehAgeFac3 + VehAgeFac4 + VehAgeFac5 + 
@@ -425,14 +442,14 @@ Poisson.Deviance(dat1_test$fitLasso, matrix_test[,1])
 
 - 样本外损失减少，说明非线性效应存在。
 
-$$\ln \mathbf{E}(N)=\ln\hat{\lambda}_{\text{GLM}}+s_1(\text{VehAge})+s_2(\text{BM})$$
+$$\ln \mathbf{E}(N)=\ln\hat{\lambda}^{\text{GLM}}+s_1(\text{VehAge})+s_2(\text{BM})$$
 
 - $s_1,s_2$为样条平滑函数。
 
 - 使用`ddply`聚合数据，找到充分统计量，加快模型拟合速度。
 
-```{r gam, eval=F}
 
+```r
 #  GAM marginals improvement (VehAge and BonusMalus)
 
 {t1 <- proc.time()
@@ -467,8 +484,8 @@ BonusMalus     VehAge   VehBrand    DrivAge     VehGas   VehPower     Region  De
  4675.0231  4396.8667  1389.2909   877.9473   795.6308   715.3584   480.3459   140.5463
   ```
 
-```{r tree,eval=F}
 
+```r
 # cross validation using xval in rpart.control
 
 names(dat1_learn)
@@ -520,16 +537,14 @@ tree1$variable.importance
 tree11$variable.importance
 ```
 
-```{r tree cv figure,echo=F,out.width="60%",fig.align = 'center'}
-knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
-knitr::include_graphics("./plots/1/tree_cv.png")
-```
+<img src="./plots/1/tree_cv.png" width="60%"  style="display: block; margin: auto;" />
 
 - 交叉验证可使用`rpart(..., control=rpart.control(xval= ,...))`或者`xpred.rpart(tree, group)`。
 
 - 以上两种方式得到很相近的`min CV rule`剪枝树55 vs 51，但`1-SD rule`相差较多22 vs 12。
 
-```{r xpred tree, eval=F}
+
+```r
 # K-fold cross-validation using xpred.rpart
 
 set.seed(1)
@@ -606,8 +621,8 @@ tree11$variable.importance
 
 - 使用验证损失确定树的数量。
 
-```{r random forest,eval=F}
 
+```r
 # fit the random forest
 
 library(distRforest)
@@ -652,16 +667,14 @@ names(forest1$trees[[2]]$variable.importance)
 sum(forest1$trees[[3]]$variable.importance)
 ```
 
-```{r rforest cv figure, echo=F,out.width="60%",fig.align = 'center'}
-knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
-knitr::include_graphics("./plots/1/random_forest_error.png")
-```
+<img src="./plots/1/random_forest_error.png" width="60%"  style="display: block; margin: auto;" />
 
 ## 泊松提升树
 
 - `n.trees` 树的数量；`shrinkage` 学习步长，和树的数量成反比；`interaction.depth` 交互项深度；`bag.fraction` 每棵树使用的数据比例；`train.fraction` 训练集比例；`n.minobsinnode`叶子上最少样本量。
 
-```{r boosting,eval=F}
+
+```r
 set.seed(1)
 {t1 <- proc.time()
   gbm1 <-
@@ -696,66 +709,11 @@ keras_poisson_dev(dat1_test$fitGBM1,dat1_test$ClaimNb)
 Poisson.Deviance(dat1_test$fitGBM1,dat1_test$ClaimNb)
 ```
 
-```{r boosting plots,include=F,eval=F}
-# plot variable importance
 
-# png("./plots/1/gbm_imp.png")
-summary(gbm1)
-# dev.off()
-gbm1
-
-# plot the important variable after "best" iterations
-
-# png("./plots/1/gbm_mar1.png")
-plot(gbm1,4,best.iter)
-# dev.off()
-
-# png("./plots/1/gbm_mar2.png")
-plot(gbm1,2,best.iter)
-# dev.off()
-
-# png("./plots/1/gbm_mar3.png")
-plot(gbm1,5,best.iter)
-# dev.off()
-
-# png("./plots/1/gbm_mar4.png")
-plot(gbm1,9,best.iter)
-# dev.off()
-
-# plot the interaction term
-
-# png("./plots/1/gbm_int1.png")
-plot(gbm1,c(4,2),best.iter,col=terrain.colors(20)) 
-# dev.off()
-
-# png("./plots/1/gbm_int2.png")
-plot(gbm1,c(4,5),best.iter)
-# dev.off()
-
-# png("./plots/1/gbm_int3.png")
-plot(gbm1,c(4,9),best.iter) 
-# dev.off()
-
-# png("./plots/1/gbm_int4.png")
-plot(gbm1,c(2,5),best.iter) 
-# dev.off()
-
-# png("./plots/1/gbm_int5.png")
-plot(gbm1,c(2,9),best.iter) 
-# dev.off()
-
-# png("./plots/1/gbm_int6.png")
-plot(gbm1,c(5,9),best.iter) 
-# dev.off()
-
-```
 
 - 根据验证集损失确定迭代次数。
 
-```{r gbm iterations, echo=F,out.width="60%",fig.align = 'center'}
-knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
-knitr::include_graphics("./plots/1/gbm_error.png")
-```
+<img src="./plots/1/gbm_error.png" width="60%"  style="display: block; margin: auto;" />
 
 - Variable importance
 
@@ -774,54 +732,27 @@ Area        0.000000
 
 - 重要变量的边缘效应 
 
-```{r gbm marginal, echo=F,out.width="40%",fig.align = 'center'}
-knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
-knitr::include_graphics("./plots/1/gbm_mar1.png")
-knitr::include_graphics("./plots/1/gbm_mar2.png")
-knitr::include_graphics("./plots/1/gbm_mar3.png")
-knitr::include_graphics("./plots/1/gbm_mar4.png")
-```
+<img src="./plots/1/gbm_mar1.png" width="40%"  style="display: block; margin: auto;" /><img src="./plots/1/gbm_mar2.png" width="40%"  style="display: block; margin: auto;" /><img src="./plots/1/gbm_mar3.png" width="40%"  style="display: block; margin: auto;" /><img src="./plots/1/gbm_mar4.png" width="40%"  style="display: block; margin: auto;" />
 
 - 重要变量的交互效应 
 
-```{r gbm interaction, echo=F, out.width="40%",fig.align = 'center'}
-knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
-knitr::include_graphics("./plots/1/gbm_int1.png")
-knitr::include_graphics("./plots/1/gbm_int2.png")
-knitr::include_graphics("./plots/1/gbm_int3.png")
-knitr::include_graphics("./plots/1/gbm_int4.png")
-knitr::include_graphics("./plots/1/gbm_int5.png")
-knitr::include_graphics("./plots/1/gbm_int6.png")
-```
+<img src="./plots/1/gbm_int1.png" width="40%"  style="display: block; margin: auto;" /><img src="./plots/1/gbm_int2.png" width="40%"  style="display: block; margin: auto;" /><img src="./plots/1/gbm_int3.png" width="40%"  style="display: block; margin: auto;" /><img src="./plots/1/gbm_int4.png" width="40%"  style="display: block; margin: auto;" /><img src="./plots/1/gbm_int5.png" width="40%"  style="display: block; margin: auto;" /><img src="./plots/1/gbm_int6.png" width="40%"  style="display: block; margin: auto;" />
 
 ## 模型比较 
 
-```{r sum,include=F,eval=F}
-dev_sum <- 
-  data.frame(model=c("Intercept","GLM","GLM Lasso","GAM","Decision tree",
-                     "Random forest","Generalized boosted model"), 
-             test_error=rep(NA,7),test_error_keras=rep(NA,7))
-dev_sum$test_error[1]<-Poisson.Deviance(dat1_test$fitGLM0,matrix_test[,1])
-dev_sum$test_error_keras[1]<-keras_poisson_dev(dat1_test$fitGLM0,matrix_test[,1])
-dev_sum$test_error[2]<-Poisson.Deviance(dat1_test$fitGLM1,matrix_test[,1])
-dev_sum$test_error_keras[2]<-keras_poisson_dev(dat1_test$fitGLM1,matrix_test[,1])
-dev_sum$test_error[3]<-Poisson.Deviance(dat1_test$fitLasso,matrix_test[,1])
-dev_sum$test_error_keras[3]<-keras_poisson_dev(dat1_test$fitLasso,matrix_test[,1])
-dev_sum$test_error[4]<-Poisson.Deviance(dat1_test$fitGAM1, dat1_test$ClaimNb)
-dev_sum$test_error_keras[4]<-keras_poisson_dev(dat1_test$fitGAM1, dat1_test$ClaimNb)
-dev_sum$test_error[5]<-Poisson.Deviance(dat1_test$fitRT_min, dat1_test$ClaimNb)
-dev_sum$test_error_keras[5]<-keras_poisson_dev(dat1_test$fitRT_min, dat1_test$ClaimNb)
-dev_sum$test_error[6]<-Poisson.Deviance(dat1_test$fitRF, dat1_test$ClaimNb)
-dev_sum$test_error_keras[6]<-keras_poisson_dev(dat1_test$fitRF, dat1_test$ClaimNb)
-dev_sum$test_error[7]<-Poisson.Deviance(dat1_test$fitGBM1,dat1_test$ClaimNb)
-dev_sum$test_error_keras[7]<-keras_poisson_dev(dat1_test$fitGBM1,dat1_test$ClaimNb)
-dev_sum[,2:3]<-round(dev_sum[,2:3],4)
-write.csv(dev_sum,"./plots/1/dev_sum.csv")
-dev_sum
-```
 
-```{r sum output, echo=F}
-read.csv("./plots/1/dev_sum.csv")[,-1]
+
+
+```
+##                       model test_error test_error_keras
+## 1                 Intercept    33.5695          21.7647
+## 2                       GLM    31.7731          20.8665
+## 3                 GLM Lasso    31.8132          20.8866
+## 4                       GAM    31.6651          20.8125
+## 5             Decision tree    30.9780          20.4690
+## 6             Random forest    30.9652          20.4626
+## 7 Generalized boosted model    30.8972          20.4286
+## 8            Neural network    31.0607          20.5080
 ```
 
 - Boosting > RF > Tree > GAM > GLM > Homo
