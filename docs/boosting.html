@@ -263,57 +263,39 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">4.1</span> AdaBoost (0,1)</h2>
 <p><span class="math inline">\(Y\in\{0,1\}\)</span></p>
 <ol style="list-style-type: decimal">
-<li>初始权重 <span class="math inline">\(\omega^{(0)}_i=\frac{1}{n}\)</span>.</li>
-</ol>
-<blockquote>
-<p>对于 <span class="math inline">\(m=1,\ldots,M\)</span>, 重复以下2-5:</p>
-</blockquote>
-<blockquote>
-<ol start="2" style="list-style-type: decimal">
-<li>使用<span class="math inline">\((\mathcal{D},\mathbf{\omega}^{(m-1)})\)</span>，训练弱学习机<span class="math inline">\(T^{(m-1)}\)</span>.</li>
-</ol>
-</blockquote>
-<blockquote>
-<ol start="3" style="list-style-type: decimal">
-<li>计算加权分类错误 <span class="math inline">\(\epsilon^{(m-1)}=\sum_{i=1}^n\omega^{(m-1)}_i \mathbb{I}(y_i \neq T^{(m-1)}(\mathbf{x}_i))\)</span>.</li>
-</ol>
-</blockquote>
-<blockquote>
-<ol start="4" style="list-style-type: decimal">
-<li>计算模型权重 <span class="math inline">\(\alpha^{(m-1)}=\ln\beta^{(m-1)}\)</span>, 其中<span class="math inline">\(\beta^{(m-1)}=\frac{1-\epsilon^{(m-1)}}{\epsilon^{(m-1)}}\)</span>.</li>
-</ol>
-</blockquote>
-<blockquote>
-<ol start="5" style="list-style-type: decimal">
-<li>计算样本权重<span class="math inline">\(\omega^{(m)}_i=\omega^{(m-1)}_i\exp\left( \alpha^{(m-1)}\mathbb{I}(y_i \neq T^{(m-1)}(\mathbf{x}_i)) \right)/w^{(m)}\)</span>, 其中<span class="math inline">\(w^{(m)}\)</span>为标准化常数。</li>
-</ol>
-</blockquote>
-<ol start="6" style="list-style-type: decimal">
-<li>最终预测结果为模型的权重之和较大的那个分类，即 <span class="math display">\[C(\mathbf{x})= \underset{k}{\arg \max} \sum_{m=1}^M\alpha^{(m)}\mathbb{I}(T^{(m)}(\mathbf{x})=k)\]</span>。</li>
+<li><p>初始权重 <span class="math inline">\(\omega^{(0)}_i=\frac{1}{n}\)</span>.</p></li>
+<li><p>使用<span class="math inline">\((\mathcal{D},\mathbf{\omega}^{(m-1)})\)</span>，训练弱学习机<span class="math inline">\(T^{(m-1)}\)</span>.</p></li>
+<li><p>计算加权分类错误 <span class="math display">\[\epsilon^{(m-1)}=\sum_{i=1}^n\omega^{(m-1)}_i \mathbb{I}(y_i \neq T^{(m-1)}(\mathbf{x}_i))\]</span></p></li>
+<li><p>计算模型权重 <span class="math inline">\(\alpha^{(m-1)}=\ln\beta^{(m-1)}\)</span>, 其中<span class="math display">\[\beta^{(m-1)}=\frac{1-\epsilon^{(m-1)}}{\epsilon^{(m-1)}}\]</span></p></li>
+<li><p>计算样本权重<span class="math display">\[\omega^{(m)}_i=\omega^{(m-1)}_i\exp\left( \alpha^{(m-1)}\mathbb{I}(y_i \neq T^{(m-1)}(\mathbf{x}_i)) \right)/w^{(m)}\]</span>, 其中<span class="math inline">\(w^{(m)}\)</span>为标准化常数。</p></li>
+<li><p>最终预测结果为 <span class="math display">\[C(\mathbf{x})= \underset{k}{\arg \max} \sum_{m=1}^M\alpha^{(m)}\mathbb{I}(T^{(m)}(\mathbf{x})=k)\]</span></p></li>
 </ol>
 <p>另外一种等价算法</p>
 <p><span class="math inline">\(Y\in\{-1,1\}\)</span></p>
-<ul>
-<li><p>初始权重 <span class="math inline">\(D_1(i)=\frac{1}{n}\)</span>.</p></li>
-<li><p>使用<span class="math inline">\((\mathcal{D},D_m)\)</span>，训练弱学习机<span class="math inline">\(h_m\)</span>.</p></li>
-<li><p>计算加权分类错误<span class="math inline">\(\epsilon_m=D_m(i)\mathbf{I}(Y_i\neq h_m(\mathbf{x}_i))\)</span>.</p></li>
-<li><p>计算模型权重<span class="math inline">\(\alpha_m=\frac{1}{2}\ln\beta_m\)</span>, 其中<span class="math inline">\(\beta_m=\frac{\epsilon_m}{1-\epsilon_m}\)</span>.</p></li>
-<li><p>计算样本权重<span class="math inline">\(D_{m+1}(i)=\frac{D_m(i)}{Z_m}\exp\left(-\alpha_mY_ih_m(\mathbf{x_i})\right)\)</span>, 其中<span class="math inline">\(Z_m\)</span>为标准化常数。</p></li>
-<li><p>最终预测结果为<span class="math inline">\(H(\mathbf{x})= \text{sign}\left(\sum_{m=1}^M \alpha_mh_m(\mathbf{x}) \right)\)</span>。</p></li>
-</ul>
+<ol style="list-style-type: decimal">
+<li><p>初始权重 <span class="math inline">\(\omega^{(0)}_i=\frac{1}{n}\)</span>.</p></li>
+<li><p>使用<span class="math inline">\((\mathcal{D},\mathbf{\omega}^{(m-1)})\)</span>，训练弱学习机<span class="math inline">\(T^{(m-1)}\)</span>.</p></li>
+<li><p>计算加权分类错误 <span class="math display">\[\epsilon^{(m-1)}=\sum_{i=1}^n\omega^{(m-1)}_i \mathbb{I}(y_i \neq T^{(m-1)}(\mathbf{x}_i))\]</span></p></li>
+<li><p>计算模型权重 <span class="math inline">\(\alpha^{(m-1)}=\frac{1}{2}\ln\beta^{(m-1)}\)</span>, 其中<span class="math display">\[\beta^{(m-1)}=\frac{1-\epsilon^{(m-1)}}{\epsilon^{(m-1)}}.\]</span></p></li>
+<li><p>计算样本权重<span class="math display">\[\omega^{(m)}_i=\omega^{(m-1)}_i\exp\left(-\alpha^{(m-1)}y_i T^{(m-1)}(\mathbf{x}_i) \right)/w^{(m)},\]</span> 其中<span class="math inline">\(w^{(m)}\)</span>为标准化常数。</p></li>
+<li><p>最终预测结果为<span class="math display">\[C(\mathbf{x})= \underset{k}{\arg \max} \sum_{m=1}^M\alpha^{(m)}\mathbb{I}(T^{(m)}(\mathbf{x})=k)\]</span></p></li>
+</ol>
 </div>
 <div id="logit-boost-real-discrete-gentle-adaboost" class="section level2">
 <h2><span class="header-section-number">4.2</span> Logit Boost (real, discrete, gentle AdaBoost)</h2>
 <p><span class="math inline">\(Y\in\{-1,1\}\)</span></p>
-<ul>
-<li><p>初始弱学习机 <span class="math inline">\(H_0(\mathbf)=h_0(\mathbf{x})=0\)</span>.</p></li>
-<li><p>计算预测概率 <span class="math inline">\(p_m(Y_i|\mathbf{x_i})=\frac{1}{1+\exp(-Y_ih_{m-1}(\mathbf{x_i}))}\)</span>。注：<span class="math inline">\(p_m(Y_i=1|\mathbf{x_i})+p_m(Y_i=-1|\mathbf{x_i})=1\)</span></p></li>
-<li><p>计算样本权重 <span class="math inline">\(D_m(i)=p_m(Y_i=y_i|\mathbf{x_i})(1-p_m(Y_i=y_i|\mathbf{x_i}))\)</span>.</p></li>
-<li><p>计算工作因变量 <span class="math inline">\(Z_m(i) = y_i(1+\exp(-y_i H_{m-1}(\mathbf{x_i})))\)</span>.</p></li>
-<li><p>训练弱学习机<span class="math inline">\(h_m\)</span>，使之最小化如下损失函数 <span class="math display">\[\sum_{i=1}^N D_m(i)(h_m(\mathbf{x_i})-Z_m(i))^2\]</span></p></li>
-<li><p>令<span class="math inline">\(H_m=H_{m-1}+h_m\)</span></p></li>
-<li><p>最终预测结果为<span class="math inline">\(\Pr(Y=y|\mathbf{x})= \frac{1}{1+\exp(-yH_M(\mathbf{x_i}))}\)</span>, 其中<span class="math inline">\(H_M=h_0+\ldots+h_M\)</span>。</p></li>
-</ul>
+<ol style="list-style-type: decimal">
+<li><p>初始弱学习机 <span class="math inline">\(T^{(0)}=0, C^{(0)}=0\)</span>.</p></li>
+<li><p>计算预测概率 <span class="math display">\[p^{(m-1)}(Y_i|\mathbf{x_i})=\frac{1}{1+\exp(-Y_iT^{(m-1)}(\mathbf{x_i}))}\]</span></p></li>
+</ol>
+<p>注：<span class="math display">\[p^{(m-1)}(Y_i=1|\mathbf{x_i})+p^{(m-1)}(Y_i=-1|\mathbf{x_i})=1\]</span></p>
+<ol start="3" style="list-style-type: decimal">
+<li><p>计算样本权重 <span class="math display">\[\omega^{(m-1)}_i=p^{(m-1)}(Y_i=y_i|\mathbf{x_i})(1-p^{(m-1)}(Y_i=y_i|\mathbf{x_i}))\]</span></p></li>
+<li><p>计算工作因变量 <span class="math display">\[z^{(m)}_i = y_i(1+\exp(-y_i C^{(m-1)}(\mathbf{x_i})))\]</span></p></li>
+<li><p>训练弱学习机<span class="math inline">\(T^{(m)}\)</span>，使之最小化如下加权损失函数 <span class="math display">\[\sum_{i=1}^N \omega_i^{(m-1)}(T^{(m)}(\mathbf{x_i})-z^{(m-1)}_i)^2\]</span></p></li>
+<li><p>令<span class="math inline">\(C^{(m)}=C^{(m-1)}+T^{(m)}\)</span></p></li>
+<li><p>最终预测概率为<span class="math display">\[\Pr(Y=y|\mathbf{x})= \frac{1}{1+\exp(-yC^{(m)}(\mathbf{x_i}))}\]</span></p></li>
+</ol>
 </div>
 <div id="adaboost.m1" class="section level2">
 <h2><span class="header-section-number">4.3</span> AdaBoost.M1</h2>

@@ -37,51 +37,51 @@ $Y\in\{0,1\}$
 
 1. 初始权重 $\omega^{(0)}_i=\frac{1}{n}$.
 
-> 对于 $m=1,\ldots,M$, 重复以下2-5:
+2. 使用$(\mathcal{D},\mathbf{\omega}^{(m-1)})$，训练弱学习机$T^{(m-1)}$. 
   
->  2. 使用$(\mathcal{D},\mathbf{\omega}^{(m-1)})$，训练弱学习机$T^{(m-1)}$. 
+3. 计算加权分类错误 $$\epsilon^{(m-1)}=\sum_{i=1}^n\omega^{(m-1)}_i \mathbb{I}(y_i \neq T^{(m-1)}(\mathbf{x}_i))$$
   
->  3. 计算加权分类错误 $\epsilon^{(m-1)}=\sum_{i=1}^n\omega^{(m-1)}_i \mathbb{I}(y_i \neq T^{(m-1)}(\mathbf{x}_i))$.
+4. 计算模型权重 $\alpha^{(m-1)}=\ln\beta^{(m-1)}$, 其中$$\beta^{(m-1)}=\frac{1-\epsilon^{(m-1)}}{\epsilon^{(m-1)}}$$
   
->  4. 计算模型权重 $\alpha^{(m-1)}=\ln\beta^{(m-1)}$, 其中$\beta^{(m-1)}=\frac{1-\epsilon^{(m-1)}}{\epsilon^{(m-1)}}$.
+5. 计算样本权重$$\omega^{(m)}_i=\omega^{(m-1)}_i\exp\left( \alpha^{(m-1)}\mathbb{I}(y_i \neq T^{(m-1)}(\mathbf{x}_i)) \right)/w^{(m)}$$, 其中$w^{(m)}$为标准化常数。
   
->  5. 计算样本权重$\omega^{(m)}_i=\omega^{(m-1)}_i\exp\left( \alpha^{(m-1)}\mathbb{I}(y_i \neq T^{(m-1)}(\mathbf{x}_i)) \right)/w^{(m)}$, 其中$w^{(m)}$为标准化常数。
-  
-6. 最终预测结果为模型的权重之和较大的那个分类，即  $$C(\mathbf{x})= \underset{k}{\arg \max} \sum_{m=1}^M\alpha^{(m)}\mathbb{I}(T^{(m)}(\mathbf{x})=k)$$。
+6. 最终预测结果为 $$C(\mathbf{x})= \underset{k}{\arg \max} \sum_{m=1}^M\alpha^{(m)}\mathbb{I}(T^{(m)}(\mathbf{x})=k)$$
 
 另外一种等价算法
 
 $Y\in\{-1,1\}$
 
-- 初始权重 $D_1(i)=\frac{1}{n}$.
+1. 初始权重 $\omega^{(0)}_i=\frac{1}{n}$.
 
-- 使用$(\mathcal{D},D_m)$，训练弱学习机$h_m$. 
-
-- 计算加权分类错误$\epsilon_m=D_m(i)\mathbf{I}(Y_i\neq h_m(\mathbf{x}_i))$.
-
-- 计算模型权重$\alpha_m=\frac{1}{2}\ln\beta_m$, 其中$\beta_m=\frac{\epsilon_m}{1-\epsilon_m}$.
-
-- 计算样本权重$D_{m+1}(i)=\frac{D_m(i)}{Z_m}\exp\left(-\alpha_mY_ih_m(\mathbf{x_i})\right)$, 其中$Z_m$为标准化常数。
-
-- 最终预测结果为$H(\mathbf{x})= \text{sign}\left(\sum_{m=1}^M \alpha_mh_m(\mathbf{x}) \right)$。
+2. 使用$(\mathcal{D},\mathbf{\omega}^{(m-1)})$，训练弱学习机$T^{(m-1)}$. 
+  
+3. 计算加权分类错误 $$\epsilon^{(m-1)}=\sum_{i=1}^n\omega^{(m-1)}_i \mathbb{I}(y_i \neq T^{(m-1)}(\mathbf{x}_i))$$
+  
+4. 计算模型权重 $\alpha^{(m-1)}=\frac{1}{2}\ln\beta^{(m-1)}$, 其中$$\beta^{(m-1)}=\frac{1-\epsilon^{(m-1)}}{\epsilon^{(m-1)}}.$$
+  
+5. 计算样本权重$$\omega^{(m)}_i=\omega^{(m-1)}_i\exp\left(-\alpha^{(m-1)}y_i T^{(m-1)}(\mathbf{x}_i) \right)/w^{(m)},$$ 其中$w^{(m)}$为标准化常数。
+  
+6. 最终预测结果为$$C(\mathbf{x})= \underset{k}{\arg \max} \sum_{m=1}^M\alpha^{(m)}\mathbb{I}(T^{(m)}(\mathbf{x})=k)$$
 
 ## Logit Boost (real, discrete, gentle AdaBoost)
 
 $Y\in\{-1,1\}$
 
-- 初始弱学习机 $H_0(\mathbf)=h_0(\mathbf{x})=0$.
+1. 初始弱学习机 $T^{(0)}=0, C^{(0)}=0$.
 
-- 计算预测概率 $p_m(Y_i|\mathbf{x_i})=\frac{1}{1+\exp(-Y_ih_{m-1}(\mathbf{x_i}))}$。注：$p_m(Y_i=1|\mathbf{x_i})+p_m(Y_i=-1|\mathbf{x_i})=1$
+2. 计算预测概率 $$p^{(m-1)}(Y_i|\mathbf{x_i})=\frac{1}{1+\exp(-Y_iT^{(m-1)}(\mathbf{x_i}))}$$
 
-- 计算样本权重 $D_m(i)=p_m(Y_i=y_i|\mathbf{x_i})(1-p_m(Y_i=y_i|\mathbf{x_i}))$. 
+注：$$p^{(m-1)}(Y_i=1|\mathbf{x_i})+p^{(m-1)}(Y_i=-1|\mathbf{x_i})=1$$
 
-- 计算工作因变量 $Z_m(i) = y_i(1+\exp(-y_i H_{m-1}(\mathbf{x_i})))$.
+3. 计算样本权重 $$\omega^{(m-1)}_i=p^{(m-1)}(Y_i=y_i|\mathbf{x_i})(1-p^{(m-1)}(Y_i=y_i|\mathbf{x_i}))$$ 
 
-- 训练弱学习机$h_m$，使之最小化如下损失函数 $$\sum_{i=1}^N D_m(i)(h_m(\mathbf{x_i})-Z_m(i))^2$$
+4. 计算工作因变量 $$z^{(m)}_i = y_i(1+\exp(-y_i C^{(m-1)}(\mathbf{x_i})))$$
 
-- 令$H_m=H_{m-1}+h_m$
+5. 训练弱学习机$T^{(m)}$，使之最小化如下加权损失函数 $$\sum_{i=1}^N \omega_i^{(m-1)}(T^{(m)}(\mathbf{x_i})-z^{(m-1)}_i)^2$$
 
-- 最终预测结果为$\Pr(Y=y|\mathbf{x})= \frac{1}{1+\exp(-yH_M(\mathbf{x_i}))}$, 其中$H_M=h_0+\ldots+h_M$。
+6. 令$C^{(m)}=C^{(m-1)}+T^{(m)}$
+
+7. 最终预测概率为$$\Pr(Y=y|\mathbf{x})= \frac{1}{1+\exp(-yC^{(m)}(\mathbf{x_i}))}$$
 
 
 ## AdaBoost.M1
