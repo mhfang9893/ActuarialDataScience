@@ -49,11 +49,11 @@ embedding-layer
 总结
 其它模型
 boosting
-adaboost
+adaboost-01
+logit-boost-real-discrete-gentle-adaboost
 adaboost.m1
-samme
-samme.r
-logit-boost
+samme-stage-wise-additive-modeling-using-a-multi-class-exponential-loss-function
+samme.r-multi-class-real-adaboost
 gradient-boosting
 newton-boosting
 xgboost
