@@ -200,7 +200,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.7" data-path="nn.html"><a href="nn.html#其它模型"><i class="fa fa-check"></i><b>3.7</b> 其它模型</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="boosting.html"><a href="boosting.html"><i class="fa fa-check"></i><b>4</b> 提升方法 (Boosting)</a><ul>
-<li class="chapter" data-level="4.1" data-path="boosting.html"><a href="boosting.html#adaboost-01"><i class="fa fa-check"></i><b>4.1</b> AdaBoost (0,1)</a></li>
+<li class="chapter" data-level="4.1" data-path="boosting.html"><a href="boosting.html#adaboost"><i class="fa fa-check"></i><b>4.1</b> AdaBoost</a></li>
 <li class="chapter" data-level="4.2" data-path="boosting.html"><a href="boosting.html#logit-boost-real-discrete-gentle-adaboost"><i class="fa fa-check"></i><b>4.2</b> Logit Boost (real, discrete, gentle AdaBoost)</a></li>
 <li class="chapter" data-level="4.3" data-path="boosting.html"><a href="boosting.html#adaboost.m1"><i class="fa fa-check"></i><b>4.3</b> AdaBoost.M1</a></li>
 <li class="chapter" data-level="4.4" data-path="boosting.html"><a href="boosting.html#samme-stage-wise-additive-modeling-using-a-multi-class-exponential-loss-function"><i class="fa fa-check"></i><b>4.4</b> SAMME (Stage-wise Additive Modeling using a Multi-class Exponential loss function)</a></li>
@@ -208,10 +208,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.6" data-path="boosting.html"><a href="boosting.html#gradient-boosting"><i class="fa fa-check"></i><b>4.6</b> Gradient Boosting</a></li>
 <li class="chapter" data-level="4.7" data-path="boosting.html"><a href="boosting.html#newton-boosting"><i class="fa fa-check"></i><b>4.7</b> Newton Boosting</a></li>
 <li class="chapter" data-level="4.8" data-path="boosting.html"><a href="boosting.html#xgboost"><i class="fa fa-check"></i><b>4.8</b> XGBoost</a></li>
-<li class="chapter" data-level="4.9" data-path="boosting.html"><a href="boosting.html#gradient-boost"><i class="fa fa-check"></i><b>4.9</b> Gradient Boost</a></li>
-<li class="chapter" data-level="4.10" data-path="boosting.html"><a href="boosting.html#xgboost-1"><i class="fa fa-check"></i><b>4.10</b> XGBoost</a></li>
-<li class="chapter" data-level="4.11" data-path="boosting.html"><a href="boosting.html#case-study"><i class="fa fa-check"></i><b>4.11</b> Case study</a><ul>
-<li class="chapter" data-level="4.11.1" data-path="boosting.html"><a href="boosting.html#commonly-used-python-code-for-py-beginners"><i class="fa fa-check"></i><b>4.11.1</b> Commonly used Python code (for py-beginners)</a></li>
+<li class="chapter" data-level="4.9" data-path="boosting.html"><a href="boosting.html#case-study"><i class="fa fa-check"></i><b>4.9</b> Case study</a><ul>
+<li class="chapter" data-level="4.9.1" data-path="boosting.html"><a href="boosting.html#commonly-used-python-code-for-py-beginners"><i class="fa fa-check"></i><b>4.9.1</b> Commonly used Python code (for py-beginners)</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -242,6 +240,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <blockquote>
 <p>On the data science competition platform Kaggle, among <strong>29</strong> challenge winning solutions in 2015, <strong>17</strong> used <strong>XGBoost</strong>, a boosting algorithm introduced by Chen and Guestrin.</p>
 </blockquote>
+<p><strong>AdaBoost及相近算法</strong></p>
 <p>AdaBoost是一种迭代算法，其核心思想是训练不同的分类器(弱分类器<span class="math inline">\(T\)</span>)，然后把这些弱分类器线性组合起来，构成一个更强的最终分类器（强分类器<span class="math inline">\(C\)</span>）。</p>
 <p>该算法是一个简单的弱分类算法提升过程，这个过程通过不断的训练，可以提高对数据的分类能力。整个过程如下所示：</p>
 <ol style="list-style-type: decimal">
@@ -259,8 +258,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>SAMME: Zhu, Zou, Rosset et al. (2006)</p></li>
 <li><p>SAMME.R: Zhu, Zou, Rosset et al. (2006)</p></li>
 </ul>
-<div id="adaboost-01" class="section level2">
-<h2><span class="header-section-number">4.1</span> AdaBoost (0,1)</h2>
+<p><strong>梯度提升算法</strong></p>
+<p>核心思想: Gradient descent method and Newton’s method.</p>
+<p><em>Gradient descent method</em></p>
+<p>Minimize the following approximation over <span class="math inline">\(y\)</span>,
+<span class="math display">\[f(y)\approx f(x)+\nabla f(x)^T(y-x) +\frac{1}{2t}||y-x||^2_2 \]</span>
+we have <span class="math inline">\(y=x^+=x-t\nabla f(x)\)</span>.</p>
+<p><em>Newton’s method</em></p>
+<p>Minimize the following approximation over <span class="math inline">\(y\)</span>,
+<span class="math display">\[f(y)\approx f(x)+\nabla f(x)^T(y-x) +\frac{1}{2}(y-x)^T\nabla^2f(x)(y-x)\]</span>
+we have <span class="math inline">\(y=x^+=x-\frac{\nabla f(x)}{\nabla ^2f(x)}\)</span>.</p>
+<ul>
+<li><p>Gradient Boost: Friedman (2001)</p></li>
+<li><p>Newton Boosting: Nielsen (2016)</p></li>
+<li><p>XGBoost: Chen and Guestrin (2016)</p></li>
+</ul>
+<div id="adaboost" class="section level2">
+<h2><span class="header-section-number">4.1</span> AdaBoost</h2>
 <p><span class="math inline">\(Y\in\{0,1\}\)</span></p>
 <ol style="list-style-type: decimal">
 <li><p>初始权重 <span class="math inline">\(\omega^{(0)}_i=\frac{1}{n}\)</span>.</p></li>
@@ -270,7 +284,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>计算样本权重<span class="math display">\[\omega^{(m)}_i=\omega^{(m-1)}_i\exp\left( \alpha^{(m-1)}\mathbb{I}(y_i \neq T^{(m-1)}(\mathbf{x}_i)) \right)/w^{(m)}\]</span>, 其中<span class="math inline">\(w^{(m)}\)</span>为标准化常数。</p></li>
 <li><p>最终预测结果为 <span class="math display">\[C(\mathbf{x})= \underset{k}{\arg \max} \sum_{m=1}^M\alpha^{(m)}\mathbb{I}(T^{(m)}(\mathbf{x})=k)\]</span></p></li>
 </ol>
-<p>另外一种等价算法</p>
+<p><strong>另外一种等价算法</strong></p>
 <p><span class="math inline">\(Y\in\{-1,1\}\)</span></p>
 <ol style="list-style-type: decimal">
 <li><p>初始权重 <span class="math inline">\(\omega^{(0)}_i=\frac{1}{n}\)</span>.</p></li>
@@ -299,30 +313,41 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="adaboost.m1" class="section level2">
 <h2><span class="header-section-number">4.3</span> AdaBoost.M1</h2>
-<p><span class="math inline">\(Y\in\{1,\ldots,k\}\)</span></p>
-<ul>
-<li><p>初始权重 <span class="math inline">\(D_1(i)=\frac{1}{n}\)</span>.</p></li>
-<li><p>使用<span class="math inline">\((\mathcal{D},D_m)\)</span>，训练弱学习机<span class="math inline">\(h_m\)</span>.</p></li>
-<li><p>计算加权分类错误<span class="math inline">\(\epsilon_m=D_m(i)\mathbf{I}(Y_i \neq h_m(\mathbf{x}_i)|\)</span>.</p></li>
-<li><p>计算模型权重<span class="math inline">\(\alpha_m=-\ln\beta_m\)</span>, 其中<span class="math inline">\(\beta_m=\frac{\epsilon_m}{1-\epsilon_m}\)</span>.</p></li>
-<li><p>计算样本权重<span class="math inline">\(D_{m+1}(i)=\frac{D_m(i)}{Z_m}\beta_m^{1-\mathbf{I}(Y_i \neq h_m(\mathbf{x}_i))}\)</span>, 其中<span class="math inline">\(Z_m\)</span>为标准化常数。</p></li>
-<li><p>最终预测结果为 $H()=  _{m:h_m()=y}_m $</p></li>
-</ul>
+<p><span class="math inline">\(Y\in\{1,\ldots,K\}\)</span></p>
+<ol style="list-style-type: decimal">
+<li><p>初始权重 <span class="math inline">\(\omega^{(0)}_i=\frac{1}{n}\)</span>.</p></li>
+<li><p>使用<span class="math inline">\((\mathcal{D},\mathbf{\omega}^{(m-1)})\)</span>，训练弱学习机<span class="math inline">\(T^{(m-1)}\)</span>.</p></li>
+<li><p>计算加权分类错误 <span class="math display">\[\epsilon^{(m-1)}=\sum_{i=1}^n\omega^{(m-1)}_i \mathbb{I}(y_i \neq T^{(m-1)}(\mathbf{x}_i))\]</span></p></li>
+<li><p>计算模型权重 <span class="math inline">\(\alpha^{(m-1)}=\ln\beta^{(m-1)}\)</span>, 其中<span class="math display">\[\beta^{(m-1)}=\frac{1-\epsilon^{(m-1)}}{\epsilon^{(m-1)}}\]</span></p></li>
+<li><p>计算样本权重<span class="math display">\[\omega^{(m)}_i=\omega^{(m-1)}_i\exp\left( \alpha^{(m-1)}\mathbb{I}(y_i \neq T^{(m-1)}(\mathbf{x}_i)) \right)/w^{(m)}\]</span>, 其中<span class="math inline">\(w^{(m)}\)</span>为标准化常数。</p></li>
+<li><p>最终预测结果为 <span class="math display">\[C(\mathbf{x})= \underset{k}{\arg \max} \sum_{m=1}^M\alpha^{(m)}\mathbb{I}(T^{(m)}(\mathbf{x})=k)\]</span></p></li>
+</ol>
 </div>
 <div id="samme-stage-wise-additive-modeling-using-a-multi-class-exponential-loss-function" class="section level2">
 <h2><span class="header-section-number">4.4</span> SAMME (Stage-wise Additive Modeling using a Multi-class Exponential loss function)</h2>
-<p><span class="math inline">\(Y\in \{1,\ldots,k\}\)</span></p>
-<ul>
-<li><p>初始权重 <span class="math inline">\(D_1(i)=\frac{1}{n}\)</span>.</p></li>
-<li><p>使用<span class="math inline">\((\mathcal{D},D_m)\)</span>，训练弱学习机<span class="math inline">\(h_m\)</span>.</p></li>
-<li><p>计算加权分类错误<span class="math inline">\(\epsilon_m=D_m(i)\mathbf{I}(Y_i \neq h_m(\mathbf{x}_i)|\)</span>.</p></li>
-<li><p>计算模型权重<span class="math inline">\(\alpha_m=\eta\left(\ln\beta_m + \ln(k-1) \right)\)</span>, 其中<span class="math inline">\(\beta_m=\frac{\epsilon_m}{1-\epsilon_m}\)</span>.</p></li>
-<li><p>计算样本权重<span class="math inline">\(D_{m+1}(i)=\frac{D_m(i)}{Z_m}\exp\left(\alpha_m\mathbf{I}(Y_i \neq h_m(\mathbf{x}_i))\right)\)</span>, 其中<span class="math inline">\(Z_m\)</span>为标准化常数。</p></li>
-<li><p>最终预测结果为 $H()=  _{m:h_m()=y}_m $</p></li>
-</ul>
+<p><span class="math inline">\(Y\in \{1,\ldots,K\}\)</span></p>
+<ol style="list-style-type: decimal">
+<li><p>初始权重 <span class="math inline">\(\omega^{(0)}_i=\frac{1}{n}\)</span>.</p></li>
+<li><p>使用<span class="math inline">\((\mathcal{D},\mathbf{\omega}^{(m-1)})\)</span>，训练弱学习机<span class="math inline">\(T^{(m-1)}\)</span>.</p></li>
+<li><p>计算加权分类错误 <span class="math display">\[\epsilon^{(m-1)}=\sum_{i=1}^n\omega^{(m-1)}_i \mathbb{I}(y_i \neq T^{(m-1)}(\mathbf{x}_i))\]</span></p></li>
+<li><p>计算模型权重 <span class="math display">\[\alpha^{(m-1)}=\eta\left(\ln\beta^{(m-1)}+\ln (k-1)\right),\]</span> 其中<span class="math display">\[\beta^{(m-1)}=\frac{1-\epsilon^{(m-1)}}{\epsilon^{(m-1)}}\]</span></p></li>
+<li><p>计算样本权重<span class="math display">\[\omega^{(m)}_i=\omega^{(m-1)}_i\exp\left( \alpha^{(m-1)}\mathbb{I}(y_i \neq T^{(m-1)}(\mathbf{x}_i)) \right)/w^{(m)},\]</span> 其中<span class="math inline">\(w^{(m)}\)</span>为标准化常数。</p></li>
+<li><p>最终预测结果为 <span class="math display">\[C(\mathbf{x})= \underset{k}{\arg \max} \sum_{m=1}^M\alpha^{(m)}\mathbb{I}(T^{(m)}(\mathbf{x})=k)\]</span></p></li>
+</ol>
 </div>
 <div id="samme.r-multi-class-real-adaboost" class="section level2">
 <h2><span class="header-section-number">4.5</span> SAMME.R (multi-class real AdaBoost)</h2>
+<p>见<a href="https://web.stanford.edu/~hastie/Papers/samme.pdf" class="uri">https://web.stanford.edu/~hastie/Papers/samme.pdf</a></p>
+<p><span class="math inline">\(Y\in \{1,\ldots,K\},\mathbf{Z}=(Z_1,\ldots,Z_k)&#39;\in\{1,-1/(K-1)\}^K\)</span>, 建立映射<span class="math inline">\(\{1,\ldots,K\}\rightarrow \{1,-1/(K-1)\}^K, Y\mapsto \mathbf{Z}(Y)\)</span>, 其中<span class="math inline">\(Z_k(k)=1\)</span>, 且<span class="math inline">\(Z_{k&#39;}(k)=-1/(K-1), k&#39;\neq k\)</span></p>
+<ol style="list-style-type: decimal">
+<li><p>初始权重 <span class="math inline">\(\omega^{(0)}_i=\frac{1}{n}\)</span>.</p></li>
+<li><p>使用<span class="math inline">\((\mathcal{D},\mathbf{\omega}^{(m-1)})\)</span>，训练弱学习机<span class="math inline">\(T^{(m-1)}\)</span>.</p></li>
+<li><p>根据<span class="math inline">\(T^{(m-1)}\)</span>计算(加权)预测频率 <span class="math display">\[p_k^{(m-1)}(\mathbf{x})=\Pr(y=k|\mathbf{x}),\]</span> 令<span class="math inline">\(\mathbf{p}^{(m-1)}(\mathbf{x})=(p_1^{(m-1)}(\mathbf{x}), \ldots,p_K^{(m-1)}(\mathbf{x}))&#39;\)</span></p></li>
+<li><p>计算模型(预测为<span class="math inline">\(k\)</span>)权重 <span class="math display">\[h^{(m-1)}_k(\mathbf{x})=(K-1)\left(\ln p^{(m-1)}_k(\mathbf{x})-\frac{1}{K}\sum_{k&#39;\neq k} \ln p_{k&#39;}^{(m-1)}(\mathbf{x})\right)\]</span></p></li>
+<li><p>计算样本权重<span class="math display">\[\omega^{(m)}_i=\omega^{(m-1)}_i\exp\left( -\frac{K-1}{K}\mathbf{Z}(y_i)^{T}\ln p^{(m-1)}(x_i) \right)/w^{(m)},\]</span> 其中<span class="math inline">\(w^{(m)}\)</span>为标准化常数。</p></li>
+<li><p>最终预测结果为 <span class="math display">\[C(\mathbf{x})= \underset{k}{\arg \max} \sum_{m=1}^M h_k^{(m)}(\mathbf{x})\]</span></p></li>
+</ol>
+<p>参考<code>Multiclass exponential loss</code> <span class="math display">\[L(Z,f)=\exp\left(-\frac{1}{K}Z^Tf\right)\]</span></p>
 </div>
 <div id="gradient-boosting" class="section level2">
 <h2><span class="header-section-number">4.6</span> Gradient Boosting</h2>
@@ -332,18 +357,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="xgboost" class="section level2">
 <h2><span class="header-section-number">4.8</span> XGBoost</h2>
-</div>
-<div id="gradient-boost" class="section level2">
-<h2><span class="header-section-number">4.9</span> Gradient Boost</h2>
-</div>
-<div id="xgboost-1" class="section level2">
-<h2><span class="header-section-number">4.10</span> XGBoost</h2>
 <p><img src="plots/4/summary.png" width="60%"  style="display: block; margin: auto;" /></p>
 </div>
 <div id="case-study" class="section level2">
-<h2><span class="header-section-number">4.11</span> Case study</h2>
+<h2><span class="header-section-number">4.9</span> Case study</h2>
 <div id="commonly-used-python-code-for-py-beginners" class="section level3">
-<h3><span class="header-section-number">4.11.1</span> Commonly used Python code (for py-beginners)</h3>
+<h3><span class="header-section-number">4.9.1</span> Commonly used Python code (for py-beginners)</h3>
 
 </div>
 </div>
