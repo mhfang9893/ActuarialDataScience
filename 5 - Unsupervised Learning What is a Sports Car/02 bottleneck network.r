@@ -1,16 +1,16 @@
 ##########################################################
-### Authors: Simon Rentzmann and Mario Wüthrich
+### Authors: Simon Rentzmann and Mario W?thrich
 ### Date: August 9, 2019
 ### Tutorial: Unsupervised learning: What is a Sports Car?
 ##########################################################
 
-source(file="./00_b functions bottleneck.R")
+source(file="./5 - Unsupervised Learning What is a Sports Car/00_b functions bottleneck.R")
 
 ##########################################################################
 ##### load data and pre-process data
 ##########################################################################
 
-dat1 <- read.table(file="SportsCars.csv", header=TRUE, sep=";")
+dat1 <- read.table(file="./5 - Unsupervised Learning What is a Sports Car/SportsCars.csv", header=TRUE, sep=";")
 str(dat1)
 
 dat2 <- dat1   
