@@ -1,9 +1,32 @@
----
-output: html_document
-editor_options: 
-  chunk_output_type: console
----
-```{r}
+# 无监督学习方法 {# unsupervised-learning}
+
+大学及以后生活中最常用的学习方法。
+
+假设一个样本量为$n$的样本有$q$个特征$\mathbf{x}_1^*,\ldots,\mathbf{x}^*_n\in\mathbb{R}^q$。其设计矩阵为
+$$\mathbf{X}=(\mathbf{x}_1^*,\ldots,\mathbf{x}^*_n)^\intercal\in\mathbb{R}^{n\times q}.$$
+把设计矩阵的每列进行标准化，得到
+$$\mathbf{X}=(x_{i,j})_{1\le i \le n,1\le j\le q}\in\mathbb{R}^{n\times q}.$$
+其中，$i$行为样本$i$的特征$\mathbf{x}_i\in\mathbb{R}^q, 1\le i\le n$, $j$列为第$j$个特征$x_j\in\mathbb{R}^n$.
+
+## 主成分分析
+
+矩阵$\mathbf{X}$的秩为$q\le n$，可以找到$q$个正交的$q$维基向量$\mathbf{v}_1,\ldots,\mathbf{v}_q\in\mathbb{R}^q$, 使得$\mathbf{v}_1$为$\mathbf{X}$波动最大的方向，$\mathbf{v}_2$为与$\mathbf{v}_1$正交方向上的$\mathbf{X}$波动最大的方向，依次类推。
+
+用数学公式可表示如下：
+$$\mathbf{v}_1=\underset{||\omega||_2=1}{\arg \max}||\mathbf{X}\omega||_2^2=\underset{\omega^\intercal\omega=1}{\arg \max} (\omega^\intercal\mathbf{X}^\intercal\mathbf{X}\omega)$$
+
+$$\mathbf{v}_2=\underset{||\omega||_2=1}{\arg \max}||\mathbf{X}\omega||_2^2 ~~~\text{ subject to } \mathbf{v}_1^\intercal\omega=0.$$
+
+主成分分析可通过以下两种方式实现
+
+- 求$\mathbf{X}^\intercal \mathbf{X}$或者$\mathbf{X}$的协方差矩阵的特征向量和特征值。
+
+- 对$\mathbf{X}$进行奇异值分解。
+
+
+## Case study
+
+```{r packages, include=FALSE}
 require(MASS)
 library(plyr)
 library(stringr)
@@ -12,11 +35,10 @@ library(matrixStats)
 library(cluster)
 library(keras)
 library(ClusterR)
-#library(mclust)
+# library(mclust)
 ```
 
-# plot functions; loss functions
-```{r}
+```{r plot functions, include=F}
 panel.hist <- function(x, ...)
 {
   usr <- par("usr"); on.exit(par(usr))
@@ -73,13 +95,13 @@ panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...)
 }
 Frobenius.loss <- function(X1,X2){sqrt(sum(as.matrix((X1-X2)^2))/nrow(X1))}
 mean.squared.loss <- function(X1,X2){mean(as.matrix((X1-X2)^2))}
-d.data.org<-read.table("data/SportsCars.csv",sep=";",header=TRUE)
+d.data.org<-read.table("./5 - Unsupervised Learning What is a Sports Car/SportsCars.csv",sep=";",header=TRUE)
 d.data<-d.data.org
 str(d.data)
 ```
 
-# data transform
-```{r}
+### data transform
+```{r data preprocess, include=F}
 d.data$W_l    <- log(d.data$weight)
 d.data$MP_l   <- log(d.data$max_power)
 d.data$CC_l   <- log(d.data$cubic_capacity)
@@ -118,7 +140,7 @@ lines(density(t.data.streu[,i1])$x, dnorm(density(t.data.streu[,i1])$x, mean=m0[
 legend(position[i1], c("empirical density", "Gaussian approximation"), col=c("orange", "blue"), lty=c(1,2), lwd=c(2,2), pch=c(-1,-1))
 ```        
 
-# principal components analysis
+### principal components analysis
 ```{r}
 # standardize matrix
 X <- X01/sqrt(colMeans(X01^2))[col(X01)]
@@ -188,7 +210,7 @@ tt.pca$loadings[1:5,1] <- switch_sign * tt.pca$loadings[1:5,1]
 biplot(tt.pca,choices=c(1,2),scale=0, expand=2, xlab="1st principal component", ylab="2nd principal component", cex=c(0.4,1.5), ylim=c(-7,7), xlim=c(-7,7))
 ```
 
-# autoencoder
+### autoencoder
 ```{r}
 bottleneck.1 <- function(q00, q22){
    Input <- layer_input(shape = c(q00), dtype = 'float32', name = 'Input')
@@ -302,7 +324,7 @@ points(x=dat0[,1], y=dat0[,2], col="red",pch=20)
 legend("bottomright", c("tau>=21", "17<=tau<21", "tau<17 (sports car)"), col=c("blue", "green", "red"), lty=c(-1,-1,-1), lwd=c(-1,-1,-1), pch=c(20,20,20))
 ```
 
-# k-means
+### k-means
 ```{r}
 # initialize
 Kaverage <- colMeans(X)
@@ -347,7 +369,7 @@ points(x=dat0$v1, y=dat0$v2, col="magenta",pch=20)
 legend("bottomleft", c("cluster 1", "cluster 2", "cluster 3", "cluster 4"), col=c("red", "orange", "magenta", "blue"), lty=c(-1,-1,-1,-1), lwd=c(-1,-1,-1,-1), pch=c(20,20,20,20))
 ```
 
-# k-medoids
+### k-medoids
 ```{r}
 set.seed(100)
 (K_res <- pam(X, k=4, metric="manhattan", diss=FALSE))
@@ -364,7 +386,7 @@ points(x=dat3[K_res$id.med,"v1"],y=dat3[K_res$id.med,"v2"], col="black",pch=20, 
 legend("bottomleft", c("cluster 1", "cluster 2", "cluster 3", "cluster 4"), col=c("red", "orange", "magenta", "blue"), lty=c(-1,-1,-1,-1), lwd=c(-1,-1,-1,-1), pch=c(20,20,20,20))
 ```
 
-# gaussian mixture model
+### gaussian mixture model
 ```{r}
 seed <- 100
 set.seed(seed)
@@ -404,7 +426,7 @@ points(x=kk1,y=kk2, col="black",pch=20, cex=2)
 legend("bottomleft", c("cluster 1", "cluster 2", "cluster 3", "cluster 4"), col=c("red", "orange", "magenta", "blue"), lty=c(-1,-1,-1,-1), lwd=c(-1,-1,-1,-1), pch=c(20,20,20,20))
 ```
 
-# t-SNE
+### t-SNE
 ```{r}
 require(MASS)
 library(plyr)
@@ -436,7 +458,7 @@ points(dat0, col="red",pch=20)
 legend("bottomleft", c("tau>=21", "17<=tau<21", "tau<17 (sports car)"), col=c("blue", "green", "red"), lty=c(-1,-1,-1), lwd=c(-1,-1,-1), pch=c(20,20,20))
 ```
 
-# umap
+### umap
 ```{r}
 kNeighbors <- 15     # default is 15
 seed <- 100
@@ -467,7 +489,7 @@ points(dat0, col="red",pch=20)
 legend("bottomright", c("tau>=21", "17<=tau<21", "tau<17 (sports car)"), col=c("blue", "green", "red"), lty=c(-1,-1,-1), lwd=c(-1,-1,-1), pch=c(20,20,20))
 ```
 
-# kohonen map
+### kohonen map
 ```{r}
 n1 <- 2
 n2 <- 10
