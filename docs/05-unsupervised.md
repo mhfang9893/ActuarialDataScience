@@ -57,19 +57,19 @@ PCA对异常值很敏感，也有稳健的PCA版本。例如，Croux等人给出
 
 作为非线性自编码器的一个例子，我们考虑瓶颈神经网络(BNN)。为了成功校准一个BNN，它的隐藏层数应该是奇数$d$ ($d$称为神经网络的深度)，并且中心隐藏层应该是低维的，有$p$个隐藏神经元，所有剩余的隐藏层应该是围绕这个中心隐藏层对称的。因此对于深度$d = 3$的BNN，我们可以选择图\@ref(fig:bnn)展示的神经网络结构
 
-```{r bnn, echo=F,out.width="40%",fig.align = 'center',fig.cap="自编码 q=5,p=2"}
-knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
-knitr::include_graphics("./plots/5/bnn.png")
-```
+<div class="figure" style="text-align: center">
+<img src="./plots/5/bnn.png" alt="自编码 q=5,p=2" width="40%" />
+<p class="caption">(\#fig:bnn)自编码 q=5,p=2</p>
+</div>
 
 ### 模型训练
 
 图\@ref(fig:bnn-train)展示了自编码的训练过程。
 
-```{r bnn-train,echo=F,out.width="60%",fig.align = 'center',fig.cap="自编码训练过程"}
-knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
-knitr::include_graphics("./plots/5/bnn_train.png")
-```
+<div class="figure" style="text-align: center">
+<img src="./plots/5/bnn_train.png" alt="自编码训练过程" width="60%"  />
+<p class="caption">(\#fig:bnn-train)自编码训练过程</p>
+</div>
 
 具体过程如下：
 
@@ -134,10 +134,10 @@ t-SNE将数据点之间的相似度转化为条件概率，原始空间中数据
 
 图\@ref(fig:som)展示了SOM的结构。
 
-```{r som,echo=F,out.width="60%",fig.align = 'center',fig.cap="SOM"}
-knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
-knitr::include_graphics("./plots/5/som.png")
-```
+<div class="figure" style="text-align: center">
+<img src="./plots/5/som.png" alt="SOM" width="60%"  />
+<p class="caption">(\#fig:som)SOM</p>
+</div>
 
 ## Case study
 
@@ -161,124 +161,18 @@ knitr::include_graphics("./plots/5/som.png")
 
 
 
-```{r packages, include=FALSE, eval=F}
-require(MASS)
-library(plyr)
-library(stringr)
-library(plotrix)
-library(matrixStats)
-library(cluster)
-library(keras)
-library(ClusterR)
-# library(mclust)
-```
 
-```{r plot functions, include=F, eval=F}
-panel.hist <- function(x, ...)
-{
-  usr <- par("usr"); on.exit(par(usr))
-   par(usr = c(usr[1:2], 0, 1.5) )
-    h <- hist(x, plot = FALSE)
-    breaks <- h$breaks; nB <- length(breaks)
-    y <- h$counts; y <- y/max(y)
-  rect(breaks[-nB], 0, breaks[-1], y, col = "cyan", ...)
-}
-panel.hist.norm <- function(x, ...)
-{
-  usr <- par("usr"); on.exit(par(usr))
-  par(usr = c(usr[1:2], 0, 1.5) )
-    h <- hist(x, plot = FALSE)
-    breaks <- h$breaks; nB <- length(breaks)
-    y <- h$counts; y <- y/max(y)
-  rect(breaks[-nB], 0, breaks[-1], y, col = "cyan", ...)
-    t.delta.breaks<-breaks[-1]-breaks[-nB]
-    t.area<-t(t.delta.breaks)%*%y
-    t.mean<-mean(x);t.sd<-sd(x)
-    t.x.abs.sort<-sort(abs(x))
-    t.boolean.0<-(t.x.abs.sort==0)
-    t.x.NachKommaStellen<-floor((1-t.boolean.0)*t.x.abs.sort[1]+t.boolean.0*t.x.abs.sort[2])
-    t.x.new<-round(x,abs(t.x.NachKommaStellen-1))
-    t.range<-range(t.x.new)
-    t.x.seq<-seq(t.range[1],t.range[2],length.out=101)
-    t.norm<-dnorm(t.x.seq,mean=t.mean,sd=t.sd)
-    t.norm<-c(t.norm)*c(t.area)
-  lines(t.x.seq,t.norm, col=2,lty=1)
-}
-panel.qq <- function(x, ...)
-{
-  usr <- par("usr"); on.exit(par(usr))
-  par(usr = c(-3.3,5,-3.3,5) )
-    t.col<-"cyan"
-    t.mean<-mean(x);t.sd<-sd(x)
-    t.x.sort<-sort((x-t.mean)/t.sd)
-    t.l<-length(x)
-    t.qq<-(1:t.l)/(1+t.l)
-    t.qnorm<-qnorm(t.qq,0,1)
-  points(t.x.sort,t.qnorm,col=t.col)
-  abline(c(0,1),col=t.col,lty=1)
-}
-panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...)
-{
-  usr <- par("usr"); on.exit(par(usr))
-  par(usr = c(0, 1, 0, 1))
-  r <- abs(cor(x, y))
-  txt <- format(c(r, 0.123456789), digits = digits)[1]
-  txt <- paste0(prefix, txt)
-  #txt <- paste0("Cor=", txt)
-  if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
-  text(0.5, 0.5, txt, cex = cex.cor * r)
-}
-Frobenius.loss <- function(X1,X2){sqrt(sum(as.matrix((X1-X2)^2))/nrow(X1))}
-mean.squared.loss <- function(X1,X2){mean(as.matrix((X1-X2)^2))}
-d.data.org<-read.table("./5 - Unsupervised Learning What is a Sports Car/SportsCars.csv",sep=";",header=TRUE)
-d.data<-d.data.org
-str(d.data)
-```
+
+
 
 ### 数据预处理
 
-```{r data preprocess, include=F, eval=F}
-d.data$W_l    <- log(d.data$weight)
-d.data$MP_l   <- log(d.data$max_power)
-d.data$CC_l   <- log(d.data$cubic_capacity)
-d.data$MT_l   <- log(d.data$max_torque)
-d.data$MES_l  <- log(d.data$max_engine_speed)
-d.data$S100_l <- log(d.data$seconds_to_100)
-d.data$TS_l   <- log(d.data$top_speed)
 
-# data transform according to Ingenbleek-Lemaire (ASTIN Bulletin 1988)
-d.data$x1s  <- d.data$W_l-d.data$MP_l
-d.data$x2s  <- d.data$MP_l-d.data$CC_l
-d.data$x3s  <- d.data$MT_l
-d.data$x4s  <- d.data$MES_l
-d.data$x5s  <- d.data$CC_l
-
-# scatter plots with  QQ plots
-t.data.streu<-d.data[!is.na(d.data$S100_l),c("W_l","MP_l","CC_l","MT_l","MES_l","S100_l","TS_l")]
-pairs(t.data.streu,diag.panel=panel.qq,upper.panel=panel.cor)
-t.data.streu<-d.data[,c("x1s","x2s","x3s","x4s","x5s")]
-pairs(t.data.streu,diag.panel=panel.qq,upper.panel=panel.cor)
-
-# scatter plots with histogram
-t.data.streu<-d.data[,c("x1s","x2s","x3s","x4s","x5s")]
-pairs(t.data.streu,diag.panel=panel.hist.norm,upper.panel=panel.cor)
-
-# col means and standard deviations
-t.data.streu <-d.data[,c("x1s","x2s","x3s","x4s","x5s")]
-(m0 <- colMeans(t.data.streu))
-X01 <- t.data.streu-colMeans(t.data.streu)[col(t.data.streu)]
-(sds <- sqrt(colMeans(X01^2))*sqrt(nrow(t.data.streu)/(nrow(t.data.streu)-1)))
-
-i1 <- 1  # should be in 1:5 for xs1 to xs5
-position <- c("topleft","topright","topleft","topleft","topleft")
-plot(density(t.data.streu[,i1]), col="orange", lwd=2, ylab="empirical density", xlab=paste("x",i1, "s", sep=""), main=list(paste("empirical density variable x", i1, "s", sep=""), cex=1.5), cex.lab=1.5)
-lines(density(t.data.streu[,i1])$x, dnorm(density(t.data.streu[,i1])$x, mean=m0[i1], sd=sds[i1]), col="blue", lwd=2, lty=2) 
-legend(position[i1], c("empirical density", "Gaussian approximation"), col=c("orange", "blue"), lty=c(1,2), lwd=c(2,2), pch=c(-1,-1))
-```        
 
 ### 主成分分析
 
-```{r, eval=F}
+
+```r
 # standardize matrix
 X <- X01/sqrt(colMeans(X01^2))[col(X01)]
 
@@ -349,7 +243,8 @@ biplot(tt.pca,choices=c(1,2),scale=0, expand=2, xlab="1st principal component", 
 
 ### 自编码
 
-```{r, eval=F}
+
+```r
 bottleneck.1 <- function(q00, q22){
    Input <- layer_input(shape = c(q00), dtype = 'float32', name = 'Input')
    
@@ -469,7 +364,8 @@ legend("bottomright", c("tau>=21", "17<=tau<21", "tau<17 (sports car)"), col=c("
 
 ### K-means
 
-```{r, eval=F}
+
+```r
 # initialize
 Kaverage <- colMeans(X)
 K0 <- 10
@@ -514,7 +410,8 @@ legend("bottomleft", c("cluster 1", "cluster 2", "cluster 3", "cluster 4"), col=
 ```
 
 ### K-medoids
-```{r, eval=F}
+
+```r
 set.seed(100)
 (K_res <- pam(X, k=4, metric="manhattan", diss=FALSE))
 
@@ -531,7 +428,8 @@ legend("bottomleft", c("cluster 1", "cluster 2", "cluster 3", "cluster 4"), col=
 ```
 
 ### Gaussian mixture model
-```{r, eval=F}
+
+```r
 seed <- 100
 set.seed(seed)
 K_res <- GMM(X, gaussian_comps=4, dist_mode="eucl_dist", seed_mode="random_subset", em_iter=5, seed=seed)
@@ -572,14 +470,15 @@ legend("bottomleft", c("cluster 1", "cluster 2", "cluster 3", "cluster 4"), col=
 
 图\@ref(fig:cluster-results)展示了聚类的结果，GMMs最好。
 
-```{r cluster-results,echo=F,out.width="60%",fig.align = 'center',fig.cap="聚类比较"}
-knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
-knitr::include_graphics("./plots/5/cluster.png")
-```
+<div class="figure" style="text-align: center">
+<img src="./plots/5/cluster.png" alt="聚类比较" width="60%"  />
+<p class="caption">(\#fig:cluster-results)聚类比较</p>
+</div>
 
 
 ### t-SNE
-```{r, eval=F}
+
+```r
 require(MASS)
 library(plyr)
 library(stringr)
@@ -612,7 +511,8 @@ legend("bottomleft", c("tau>=21", "17<=tau<21", "tau<17 (sports car)"), col=c("b
 
 ### UMAP
 
-```{r, eval=F}
+
+```r
 kNeighbors <- 15     # default is 15
 seed <- 100
 set.seed(seed)
@@ -644,7 +544,8 @@ legend("bottomright", c("tau>=21", "17<=tau<21", "tau<17 (sports car)"), col=c("
 
 ### Kohonen map
 
-```{r, eval=F}
+
+```r
 n1 <- 2
 n2 <- 10
 
