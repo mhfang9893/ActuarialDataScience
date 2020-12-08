@@ -438,6 +438,8 @@ $$\underset{(C_1,\ldots,C_K)}{\arg \min}\sum_{k=1}^K\sum_{\mathbf{x}_i\in C_k\ca
 
 其中$\mathbf{\mu}_k$为类均值向量，因此目标函数衡量了类内样本点围绕类均值向量的紧密程度，其值越小意味着类内样本相似度越高，聚类效果越好。但是上述目标函数并不容易找到最优解，这需要考虑$n$个样本点所有可能的类划分，因此K-means算法采用了贪心策略，通过迭代优化来近似求解上述目标函数。
 
+K-means算法:1.选择初始聚类中心$\mathbf{\mu}_k^{(0)}$和聚类个数$K$；2. 迭代(终止条件：除非类均值向量$\mathbf{\mu}_k^{(t-1)}$不再更新或达到最大迭代次数)——(1)计算$n$个样本点$x_i$与前一轮均值向量$\mathbf{\mu}_k^{(t)}$的距离，根据距离最近原则重新分配所有样本点，即$C_k^{(t)}(x_i)=\underset{\mathbf{k}\in\mathcal{K}}{\arg \min}||\mathbf{\mu}_k^{(t-1)}-\mathbf{x}_i||_2^2$;(2)基于$C_k^{(t)}$更新类均值向量$\mathbf{\mu}_k^{(t)}$
+
 ```{r kmeans, eval=F}
 # initialize
 Kaverage <- colMeans(X)
